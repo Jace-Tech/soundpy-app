@@ -1,0 +1,47 @@
+@import url("./assets/fonts/manrope/font.css");
+
+:root {
+  font-family: Manrope, Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  overflow: hidden;
+}
+
+.scrollbar {
+  scrollbar-width: 4px;
+  scrollbar-color: transparent #aaa;
+  /* color: hsl(178, 23%, 60%) */
+}
+
+.scrollbar.dark {
+  scrollbar-width: 4px;
+  scrollbar-color: transparent #555;
+}
+
+.scrollbar::-webkit-scrollbar {
+  width: 4px;
+  background-color: transparent;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  background-color: #aaa;
+  border-radius: 10px;
+}
+
+.scrollbar.dark::-webkit-scrollbar-thumb {
+  background-color: #555;
+  border-radius: 10px;
+}
