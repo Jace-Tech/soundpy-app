@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react'
 import DashLayout from '../../../components/global/DashLayout'
 import { Avatar, Badge, Box, Container, HStack, Heading, IconButton, Spacer, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useDisclosure } from '@chakra-ui/react'

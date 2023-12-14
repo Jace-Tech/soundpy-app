@@ -1,5 +1,5 @@
 
-import { Avatar, Flex, HStack, Heading, Spacer, Stack, Text } from '@chakra-ui/react'
+import { Avatar, Flex, HStack, Heading, Stack, Text } from '@chakra-ui/react'
 import React from 'react'
 import useColorMode from '../../hooks/useColorMode'
 import * as dayjs from 'dayjs'
@@ -20,10 +20,6 @@ const CommentCard: React.FC<CommentCardProps> = ({ comment, content, user, date 
             <Stack spacing={1}>
                 <Flex as={Link} to={`/profile/${user?.username}`} alignItems={'center'} gap={3}>
                     <Heading color={colors.TEXT_WHITE} size={"xs"}>{user?.musicName || user?.username}</Heading>
-                    {/* <Text color={colors.TEXT_GRAY} fontSize={'xs'}>@{user?.musicName}</Text>
-
-
-                    <Spacer /> */}
                     <Text color={colors.TEXT_GRAY} fontSize={'xs'}>{dayjs(date).fromNow()}</Text>
                 </Flex>
                 <Text color={colors.TEXT_DARK} fontSize={"sm"}>{comment}</Text>
