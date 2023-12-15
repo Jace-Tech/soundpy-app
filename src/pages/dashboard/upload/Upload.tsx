@@ -79,7 +79,7 @@ const Upload: React.FC<UploadProps> = () => {
 
           <Drawer isOpen={isOpen} onClose={onClose} placement={"bottom"} >
             <DrawerOverlay />
-            <DrawerContent>
+            <DrawerContent bg={colors.BG_COLOR}>
               <DrawerBody>
                 <HStack w={"full"} alignItems={"flex-start"} spacing={4} mt={8}>
                   <Checkbox colorScheme='teal' id={"accept"} mt={2} isChecked={agreed} onChange={toggleAgreed} />

@@ -30,16 +30,16 @@ const StakePriceModal: React.FC<StakePriceModalProps> = ({ isOpen, onClose, sett
     return (
         <Drawer placement={"bottom"} onClose={onClose} isOpen={isOpen}>
             <DrawerOverlay />
-            <DrawerContent minH={400} roundedTop={"lg"}>
+            <DrawerContent bg={colors.BG_COLOR} minH={400} roundedTop={"lg"}>
 
                 <DrawerHeader as={HStack}>
                     <Heading flex={1} textAlign={"center"} fontSize={"2xl"} textDecor={"underline"} textUnderlineOffset={4} textDecorationThickness={"2px"} color={colors.TEXT_WHITE}>Return or Forfeit</Heading>
-                    <CloseButton onClick={onClose} pos={"relative"}  />
+                    <CloseButton color={colors.TEXT_WHITE} onClick={onClose} pos={"relative"}  />
                 </DrawerHeader>
                 <DrawerBody>
                     <VStack>
                         <Heading size={"md"} color={colors.TEXT_WHITE}>Do you own this content?</Heading>
-                        <Text textAlign={"center"}>Stake {isLoading ? <CircularProgress isIndeterminate color='gray.400' size={6} /> : settings?.stakePrice} Pi to avoid infringement!
+                        <Text textAlign={"center"} color={colors.TEXT_DARK}>Stake {isLoading ? <CircularProgress isIndeterminate color='gray.400' size={6} /> : settings?.stakePrice} Pi to avoid infringement!
                             your staked pi will be returned to you
                             upon content ownership confirmation via
                             copyright certication or live studio record.
