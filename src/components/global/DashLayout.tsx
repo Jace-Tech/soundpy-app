@@ -1,8 +1,10 @@
-import { Box, BoxProps, Flex } from '@chakra-ui/react'
+import { Alert, AlertIcon, Box, BoxProps, Flex, Link } from '@chakra-ui/react'
 import React from 'react'
+import { Link as ReactLink } from 'react-router-dom';
 import Footer from './Footer'
 import useColorMode from '../../hooks/useColorMode';
 import { useGlobalContext } from '../../context';
+import { useAppSelector } from '../../store/hooks';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface DashLayoutProps extends BoxProps {
@@ -15,10 +17,17 @@ interface DashLayoutProps extends BoxProps {
 const DashLayout:React.FC<DashLayoutProps> = ({header, footer, children, hideFooter, capHeight, ...prop }) => {
   const { isDark } = useColorMode()
   const { mainHeight } = useGlobalContext()
+  const user = useAppSelector(state => state.userStore.user)
 
   return (
     <Flex flexDir={"column"} minH={"100vh"}>
       { header }
+      {!user?.musicName && (
+          <Alert fontSize={"sm"} status='info' variant='subtle'>
+          <AlertIcon />
+            Please complete your profile. <Link to={"/profile/settings"} ml={1} color={"blue.500"} as={ReactLink}>click here</Link>
+        </Alert>
+        )}
       <Box 
         flex={1} 
         className={`scrollbar ${isDark ? 'dark' : ''}`}

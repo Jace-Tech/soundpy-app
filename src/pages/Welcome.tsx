@@ -35,10 +35,14 @@ const Welcome: React.FC<WelcomeProps> = () => {
         },
         accessToken: result.accessToken
       })
-      console.log("AUTH RES:",authResult)
-      if(!authResult.success) throw new Error(authResult.message)
+      console.log("AUTH RES:", authResult)
+      if (!authResult.success) throw new Error(authResult.message)
       dispatch(loginSucess(authResult.data as any))
-  
+
+      if (authResult.data?.isNew) {
+        Storage.removeItem(APP_FIRST_TIME_USER)
+      }
+
       const isFirstTime = Storage.getItem(APP_FIRST_TIME_USER)
       if (!isFirstTime) {
         navigate("/welcome")
@@ -48,7 +52,7 @@ const Welcome: React.FC<WelcomeProps> = () => {
       // NAVIGATE TO DASHBOARD
       navigate("/home")
     }
-    catch (e: any){
+    catch (e: any) {
       console.log("ERROR [AUTH]:", e.message)
       showAlert(e.message, "error")
     }
@@ -56,6 +60,8 @@ const Welcome: React.FC<WelcomeProps> = () => {
       closeLoading()
     }
   }
+
+  const isNewUser = Boolean(Storage.getItem(APP_FIRST_TIME_USER))
 
   return (
     <AppContainer
@@ -73,7 +79,9 @@ const Welcome: React.FC<WelcomeProps> = () => {
           <Image src={LOGO} alt={"Logo"} maxW={170} mx={"auto"} />
           <Heading fontSize={"2rem"} fontWeight={"bold"} color={"white"} lineHeight={"1.3"}>Welcome to Soundpy</Heading>
           <Text fontSize={".9rem"} lineHeight={"1.7"} color={"gray.300"}>{WELCOME_TEXT}</Text>
-          <CustomButton isLoading={isLoading} loadingText={"Loading"} onClick={handleConnectAccount} mt={8} size={"lg"} as={ReactLink}>Get Started</CustomButton>
+          <CustomButton isLoading={isLoading} loadingText={"Loading"} onClick={handleConnectAccount} mt={8} size={"lg"} as={ReactLink}>
+            {!isNewUser ? "Get Started" : "Welcome back"}
+          </CustomButton>
         </Stack>
       </Stack>
     </AppContainer>

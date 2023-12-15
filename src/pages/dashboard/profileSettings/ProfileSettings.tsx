@@ -3,20 +3,20 @@
 
 import React, { useEffect, useRef, useState } from 'react'
 import AppBar from '../../../components/global/AppBar'
-import { Avatar, AvatarBadge, Box, Button, Center, CircularProgress, IconButton, Link, Stack, Text, useDisclosure, useToast } from '@chakra-ui/react'
+import { Avatar, AvatarBadge, Box, Button, Center, CircularProgress, IconButton, Link, Stack, Text, useDisclosure } from '@chakra-ui/react'
 import useColorMode from '../../../hooks/useColorMode'
 import { AiFillCamera } from "react-icons/ai"
 import AppContainer from '../../../components/global/AppContainer'
 import CustomInput from '../../../components/local/CustomInput'
 import { useForm } from 'react-hook-form'
 import { useAppDispatch, useAppSelector } from '../../../store/hooks'
-import { MAX_DEPTH } from '../../../utils/constant'
 import { getFileUrl } from '../../../utils/helper'
 import { updateUser } from '../../../store/slices/userSlice'
 import { useGlobalContext } from '../../../context'
 import { useNavigate } from 'react-router-dom'
 import { updateProfile, updateProfilePicture } from '../../../apis/auth'
 import { getGenres } from '../../../apis/genre'
+import useAlert from '../../../hooks/useAlert'
 
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -30,12 +30,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = () => {
   const { isOpen: isFetching, onOpen: openFetching, onClose: closeFetching } = useDisclosure()
   const [genres, setGenres] = useState<GenreType[]>([])
 
-  const toast = useToast({ isClosable: true, position: "top", duration: 6000, containerStyle: { zIndex: MAX_DEPTH + 10 } })
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
   const { control, getValues } = useForm({ mode: "onTouched" })
-
+  const { showAlert } = useAlert()
   const bgInputRef = useRef(null)
   const avaterInputRef = useRef(null)
 
@@ -61,46 +60,42 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = () => {
   }, [])
 
   const handleImageUpload = async (e: React.FormEvent<HTMLInputElement>) => {
-    e.preventDefault()
-    openLoading()
-    const name = (e.target as any).name
-    const imageData = await getFileUrl((e.target as any).files[0])
-
-    const result = await updateProfilePicture({ name, image: imageData as string }, token?.token! as string)
-    if (!result) {
-      toast({
-        description: result.message,
-        status: "error",
-      })
-      closeLoading()
-      return
+    try {
+      e.preventDefault()
+      openLoading()
+      const name = (e.target as any).name
+      const imageData = await getFileUrl((e.target as any).files[0])
+      const result = await updateProfilePicture({ name, image: imageData as string }, token?.token! as string)
+      if (!result.success) throw new Error(result.message) 
+      dispatch(updateUser(result.data))
+      showAlert(result.message, "success")
+    } 
+    catch (err: any) {
+      showAlert(err.message, "error")
     }
-    dispatch(updateUser(result.data))
-    toast({
-      description: result.message,
-      status: "success",
-    })
-    closeLoading()
+    finally {
+      closeLoading()
+    }
   }
 
   const handleUpdateData = async () => {
-    const data = getValues()
-    const result = await updateProfile(data, token?.token! as string)
-    console.log("RESULT:", result)
-    if (!result.success) {
-      toast({
-        description: result.message,
-        status: "error",
-      })
-      return
+    try  {
+      const data = getValues()
+      console.log("DATA:", data)
+      const result = await updateProfile(data, token?.token! as string)
+      console.log("RESULT:", result)
+      if (!result.success) throw new Error(result.message)
+
+      dispatch(updateUser(result.data))
+      showAlert(result.message, "success")
+      navigate("/profile/" + userData?.username, { replace: true })
     }
-    dispatch(updateUser(result.data))
-    toast({
-      description: result.message,
-      status: "success",
-    })
-    closeLoading()
-    navigate("/profile/" + userData?.username, { replace: true })
+    catch (err: any)  {
+      showAlert(err.message, "error")
+    }
+    finally {
+      closeLoading()
+    }
   }
 
 
