@@ -75,8 +75,17 @@ const TransactionDetail: React.FC<TransactionDetailProps> = () => {
                     </Center>
                 ) : (
                     <Stack my={6}>
-                        <ContentCard {...transaction?.meta.metadata.content as ContentFeedType} />
+                        { transaction?.type === "content" &&  <ContentCard {...transaction?.meta.metadata.content as ContentFeedType} /> }
                         <Stack>
+                            <DetailItem
+                                title='Description:'
+                                value={transaction?.desc}
+                            />
+                            <DetailItem
+                                title='Status:'
+                                value={transaction?.status}
+                                isStatus
+                            />
                             <DetailItem
                                 title='Order number:'
                                 value={transaction?.piPaymentId}

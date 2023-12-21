@@ -43,7 +43,7 @@ const UploadContextProvider: React.FC<UploadContextProviderProps> = ({ children 
 
   const handleCancelUpload = () => {
     setContentType("")
-    navigate("/")
+    navigate("/home")
   }
 
   const handleSetFile = (e: React.ChangeEvent<HTMLInputElement>) => {

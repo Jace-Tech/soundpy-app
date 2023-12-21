@@ -28,20 +28,24 @@ interface ProfileProps { }
 const Profile: React.FC<ProfileProps> = () => {
   const { colors, hoverColor } = useColorMode()
   const token = useAppSelector(state => state.userStore.token)
-  const { data, isLoading: isFetching } = usePagination((page, perPage, filter) => getUserContent(token!.token, page, perPage, filter))
-
   const [user, setUserData] = useState<ProfileData>()
   const [contents, setContent] = useState<ContentFeedType[]>([])
   const { isOpen: isLoading, onClose: closeLoading, onOpen: openLoading } = useDisclosure()
   const param = useParams()
   const { showAlert } = useAlert()
   const navigate = useNavigate()
+  const { data, isLoading: isFetching, handleFetchRequest, perPage, page } = usePagination((page, perPage, filter) => getUserContent(user?._id, token!.token, page, perPage, filter))
 
   const { setMainHeight } = useGlobalContext()
 
   useEffect(() => {
     setContent(data)
   }, [data])
+
+  useEffect(() => {
+    if (!user) return
+    handleFetchRequest(page, perPage)
+  }, [user])
 
   const fetchUserData = async () => {
     if (!param?.username || !token) return
@@ -170,7 +174,7 @@ const Profile: React.FC<ProfileProps> = () => {
       </AppContainer>
 
 
-      <Tabs pos={"relative" } onChange={(...index) => console.log("tabs:", index)} borderColor={colors.DIVIDER} variant={"unstyled"}>
+      <Tabs pos={"relative"} onChange={(...index) => console.log("tabs:", index)} borderColor={colors.DIVIDER} variant={"unstyled"}>
 
         <TabList borderBottom={`1px solid ${colors.DIVIDER}`} p={3}>
           <Container maxW={"container.sm"}>

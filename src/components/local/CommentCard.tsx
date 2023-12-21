@@ -13,9 +13,9 @@ dayjs.extend(relativeTime)
 interface CommentCardProps extends CommentType { }
 
 const CommentCard: React.FC<CommentCardProps> = ({ comment, content, user, date }) => {
-    const { colors } = useColorMode()
+    const { colors, hoverColor } = useColorMode()
     return (
-        <HStack spacing={2} alignItems={"start"} py={2}>
+        <HStack spacing={2} alignItems={"start"} py={2} bg={hoverColor}>
             <Avatar size={'md'} as={Link} to={`/profile/${user?.username}`} borderWidth={1} borderStyle={"solid"} borderColor={colors.DIVIDER} src={user?.profileImage} name={user?.musicName || user?.username} />
             <Stack spacing={1}>
                 <Flex as={Link} to={`/profile/${user?.username}`} alignItems={'center'} gap={3}>

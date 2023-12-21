@@ -21,7 +21,7 @@ export const getPostContent = async (token: string,  page: number = 1, perPage: 
 }
 
 // GET ALL CONTENT POST
-export const getUserContent = async (token: string, page: number = 1, perPage: number = 12, query?: string) => {
+export const getUserContent = async (id: string, token: string, page: number = 1, perPage: number = 12, query?: string) => {
     try {
         const options: RequestInit = {
             method: "GET",
@@ -30,7 +30,7 @@ export const getUserContent = async (token: string, page: number = 1, perPage: n
                 "Authorization": `Bearer ${token}`
             }
         }
-        const request = await fetch(GET_USER_CONTENT_ENDPOINT(page, perPage, query), options)
+        const request = await fetch(GET_USER_CONTENT_ENDPOINT(id, page, perPage, query), options)
         const response = await request.json()
         return response
     } catch (error: any) {

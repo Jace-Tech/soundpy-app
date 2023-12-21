@@ -1,4 +1,4 @@
-import { HStack, IconButton, Text, useDisclosure } from "@chakra-ui/react";
+import { Badge, HStack, IconButton, Text, useDisclosure } from "@chakra-ui/react";
 import React, { useEffect } from "react"
 import useColorMode from "../../../../hooks/useColorMode";
 import { IoCopyOutline } from "react-icons/io5";
@@ -9,8 +9,9 @@ interface DetailItemProps {
     title: string;
     value: string;
     canCopy?: boolean;
+    isStatus?: boolean;
 }
-const DetailItem:React.FC<DetailItemProps> = ({ title, value, canCopy }) => {
+const DetailItem:React.FC<DetailItemProps> = ({ title, value, isStatus, canCopy }) => {
     const { colors } = useColorMode()
     const { isOpen: isCopying, onOpen: openCopy, onClose: closeCopy } = useDisclosure()
     const { showAlert } = useAlert()
@@ -23,14 +24,15 @@ const DetailItem:React.FC<DetailItemProps> = ({ title, value, canCopy }) => {
         closeCopy()
     } 
 
-    useEffect(() => {
-
-    }, [])
+    const isPending = value?.toLowerCase()?.includes("pending")
+    const isSuccess = value?.toLowerCase()?.includes("success")
     return(
        <HStack alignItems={"flex-start"} w={"full"} py={2} borderBottom={`1px solid ${colors.DIVIDER}`}>
         <Text whiteSpace={"nowrap"} fontSize={"sm"} fontWeight={"medium"} color={colors.TEXT_WHITE}>{title}</Text>
         <HStack flex={1} justifyContent={"flex-end"} alignItems={"flex-start"}>
-            <Text wordBreak={"break-all"} flex={1} fontSize={"sm"} textAlign={"right"} noOfLines={2} color={colors.TEXT_GRAY}>{value}</Text>
+            { isStatus ? <Badge fontSize={"xs"} rounded={"full"} textTransform={"lowercase"} fontWeight={"normal"} colorScheme={isSuccess ? "green" : isPending ? "orange" : "red"} px={4} py={1}>{value}</Badge> : 
+                <Text wordBreak={"break-all"} flex={1} fontSize={"sm"} textAlign={"right"} noOfLines={2} color={colors.TEXT_GRAY}>{value}</Text>
+            }
             { canCopy &&  <IconButton 
                 size={"sm"}
                 aria-label="copy"

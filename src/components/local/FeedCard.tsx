@@ -229,7 +229,7 @@ const FeedCard: React.FC<FeedCardProps> = ({ title, createdAt, type, price, user
       >
         <Drawer placement={'bottom'} onClose={onClose} isOpen={isOpen}>
           <DrawerOverlay />
-          <DrawerContent minH={500}>
+          <DrawerContent h={500} bg={colors.BG_COLOR}>
             <DrawerHeader color={colors.TEXT_WHITE} borderBottomWidth='1px'>Comments</DrawerHeader>
             <DrawerBody overflowY={"auto"}>
               <Stack spacing={2}>

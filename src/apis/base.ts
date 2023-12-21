@@ -19,7 +19,7 @@ export const GENRE_ENDPOINT = BASE_URL + "/genre"
 //CONTENT
 export const POST_CONTENT_ENDPOINT = BASE_URL + "/content/create"
 export const GET_CONTENT_ENDPOINT = (page: number, perPage: number, query?: string) => `${BASE_URL}/content?page=${page}&perPage=${perPage}${query ? `&${query}`: ""}`
-export const GET_USER_CONTENT_ENDPOINT = (page: number, perPage: number, query?: string) => `${BASE_URL}/content/user?page=${page}&perPage=${perPage}${query ? `&${query}`: ""}`
+export const GET_USER_CONTENT_ENDPOINT = (id: string, page: number, perPage: number, query?: string) => `${BASE_URL}/content/user/${id}?page=${page}&perPage=${perPage}${query ? `&${query}`: ""}`
 
 // PLAYLIST
 export const ADD_PLAYLIST = BASE_URL + "/playlist/"
