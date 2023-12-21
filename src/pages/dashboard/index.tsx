@@ -19,7 +19,7 @@ import { MAX_DEPTH } from '../../utils/constant';
 interface DashboardProps { }
 
 const Dashboard: React.FC<DashboardProps> = () => {
-  const { colors, trans } = useColorMode()
+  const { colors } = useColorMode()
   const token = useAppSelector(state => state.userStore.token)
   const [type, setType] = useState<ContentType>("")
   const { data, handleFetchRequest, page, perPage, isLoading, isLoadingMore, handleFetchMore, handleFilterRequest } = usePagination((page, perPage, filter) => getPostContent(token!.token, page, perPage, filter))
