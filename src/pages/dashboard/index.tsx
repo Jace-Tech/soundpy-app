@@ -29,7 +29,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
     setContents(data)
   }, [data])
 
-  
+
   const handleScrollFetch = async () => {
     const documentHeight = document.documentElement.scrollHeight;
     const scrollTop = window.scrollY || window.pageYOffset;
@@ -38,13 +38,13 @@ const Dashboard: React.FC<DashboardProps> = () => {
   }
 
   const handleGetType = () => {
-    if(!type) return handleFetchRequest(page, perPage)
+    if (!type) return handleFetchRequest(page, perPage)
     return handleFilterRequest(`type=${type}`)
   }
 
 
   useEffect(() => {
-    handleGetType()
+    handleGetType() 
   }, [type])
 
   useEffect(() => {
@@ -60,25 +60,25 @@ const Dashboard: React.FC<DashboardProps> = () => {
 
   useEffect(() => {
     console.log("DATA:", data)
-  },  [data])
+  }, [data])
   console.log("TOCK:", token)
 
   return (
     <DashLayout
       header={<Header borderBottom={`1px solid ${colors.DIVIDER}`} />}
     >
-      <AppContainer bg={colors.BG_COLOR} h={"fit-content"}>
-        <SectionBox sectionTitle='Feeds'>
-          <HStack py={2} bg={trans} backdropBlur={"lg"}  alignItems={"center"} pos={"sticky"} left={0} top={0} zIndex={MAX_DEPTH - 20}>
-            <Button onClick={() => setType("")} aria-selected={type === ""} _selected={{ color: "#fff", bg: colors.PRIMARY_COLOR }} px={5} py={1.5} rounded="full" color={colors.TEXT_GRAY} fontWeight={"semibold"}>All</Button>
+      <SectionBox HeaderProp={{ px: 4 }} sectionTitle='Feeds' bg={colors.BG_COLOR} h={"fit-content"}>
+        <HStack px={4} py={2} borderY={`1px solid ${colors.DIVIDER}`} bg={colors.BG_COLOR} alignItems={"center"} pos={"sticky"} left={0} top={0} zIndex={MAX_DEPTH - 20}>
+          <Button onClick={() => setType("")} aria-selected={type === ""} _selected={{ color: "#fff", bg: colors.PRIMARY_COLOR }} px={5} py={1.5} rounded="full" color={colors.TEXT_WHITE} fontWeight={"semibold"}>All</Button>
 
-            <Button onClick={() => setType("song")} aria-selected={type === "song"} _selected={{ color: "#fff", bg: colors.PRIMARY_COLOR }} px={5} py={1.5} rounded="full" color={colors.TEXT_GRAY} fontWeight={"semibold"}>Song</Button>
-            
-            <Button onClick={() => setType("music-video")} aria-selected={type === "music-video"} _selected={{ color: "#fff", bg: colors.PRIMARY_COLOR }} px={5} py={1.5} rounded="full" color={colors.TEXT_GRAY} fontWeight={"semibold"}>Video</Button>
-            
-            <Button onClick={() => setType("beat")} aria-selected={type === "beat"} _selected={{ color: "#fff", bg: colors.PRIMARY_COLOR }} px={5} py={1.5} rounded="full" color={colors.TEXT_GRAY} fontWeight={"semibold"}>Beat</Button>
-            {/* <Tab _selected={{ color: "#fff", bg: colors.PRIMARY_COLOR }} px={5} py={1.5} rounded="full" color={colors.TEXT_GRAY} fontWeight={"semibold"}>Live</Tab> */}
-          </HStack>
+          <Button onClick={() => setType("song")} aria-selected={type === "song"} _selected={{ color: "#fff", bg: colors.PRIMARY_COLOR }} px={5} py={1.5} rounded="full" color={colors.TEXT_WHITE} fontWeight={"semibold"}>Song</Button>
+
+          <Button onClick={() => setType("music-video")} aria-selected={type === "music-video"} _selected={{ color: "#fff", bg: colors.PRIMARY_COLOR }} px={5} py={1.5} rounded="full" color={colors.TEXT_WHITE} fontWeight={"semibold"}>Video</Button>
+
+          <Button onClick={() => setType("beat")} aria-selected={type === "beat"} _selected={{ color: "#fff", bg: colors.PRIMARY_COLOR }} px={5} py={1.5} rounded="full" color={colors.TEXT_WHITE} fontWeight={"semibold"}>Beat</Button>
+          {/* <Tab _selected={{ color: "#fff", bg: colors.PRIMARY_COLOR }} px={5} py={1.5} rounded="full" color={colors.TEXT_GRAY} fontWeight={"semibold"}>Live</Tab> */}
+        </HStack>
+        <AppContainer>
           {/* TRAVERSE THROUGH THE [POST] ARRAY */}
           {isLoading ? (
             <CustomLoader />
@@ -94,8 +94,8 @@ const Dashboard: React.FC<DashboardProps> = () => {
               <CircularProgress isIndeterminate color='gray.400' size={8} />
             </Center>
           )}
-        </SectionBox>
-      </AppContainer>
+        </AppContainer>
+      </SectionBox>
     </DashLayout>
   )
 }
