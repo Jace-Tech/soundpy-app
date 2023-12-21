@@ -1,5 +1,5 @@
 import { Badge, HStack, IconButton, Text, useDisclosure } from "@chakra-ui/react";
-import React, { useEffect } from "react"
+import React from "react"
 import useColorMode from "../../../../hooks/useColorMode";
 import { IoCopyOutline } from "react-icons/io5";
 import { SECONDARY_COLOR } from "../../../../utils/colors";
