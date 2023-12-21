@@ -19,7 +19,7 @@ import { MAX_DEPTH } from '../../utils/constant';
 interface DashboardProps { }
 
 const Dashboard: React.FC<DashboardProps> = () => {
-  const { colors } = useColorMode()
+  const { colors, trans } = useColorMode()
   const token = useAppSelector(state => state.userStore.token)
   const [type, setType] = useState<ContentType>("")
   const { data, handleFetchRequest, page, perPage, isLoading, isLoadingMore, handleFetchMore, handleFilterRequest } = usePagination((page, perPage, filter) => getPostContent(token!.token, page, perPage, filter))
@@ -69,7 +69,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
     >
       <AppContainer bg={colors.BG_COLOR} h={"fit-content"}>
         <SectionBox sectionTitle='Feeds'>
-          <HStack bg={colors.BG_COLOR}  alignItems={"center"} pos={"sticky"} left={0} top={0} zIndex={MAX_DEPTH - 20}>
+          <HStack py={2} bg={trans} backdropBlur={"lg"}  alignItems={"center"} pos={"sticky"} left={0} top={0} zIndex={MAX_DEPTH - 20}>
             <Button onClick={() => setType("")} aria-selected={type === ""} _selected={{ color: "#fff", bg: colors.PRIMARY_COLOR }} px={5} py={1.5} rounded="full" color={colors.TEXT_GRAY} fontWeight={"semibold"}>All</Button>
 
             <Button onClick={() => setType("song")} aria-selected={type === "song"} _selected={{ color: "#fff", bg: colors.PRIMARY_COLOR }} px={5} py={1.5} rounded="full" color={colors.TEXT_GRAY} fontWeight={"semibold"}>Song</Button>
