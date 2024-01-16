@@ -42,7 +42,6 @@ const Dashboard: React.FC<DashboardProps> = () => {
     return handleFilterRequest(`type=${type}`)
   }
 
-
   useEffect(() => {
     handleGetType() 
   }, [type])
@@ -58,6 +57,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
     }
   }, [])
 
+
   useEffect(() => {
     console.log("DATA:", data)
   }, [data])
@@ -67,24 +67,27 @@ const Dashboard: React.FC<DashboardProps> = () => {
     <DashLayout
       header={<Header borderBottom={`1px solid ${colors.DIVIDER}`} />}
     >
-      <SectionBox HeaderProp={{ px: 4 }} sectionTitle='Feeds' bg={colors.BG_COLOR} h={"fit-content"}>
-        <HStack px={4} py={2} borderY={`1px solid ${colors.DIVIDER}`} bg={colors.BG_COLOR} alignItems={"center"} pos={"sticky"} left={0} top={0} zIndex={MAX_DEPTH - 20}>
-          <Button onClick={() => setType("")} aria-selected={type === ""} _selected={{ color: "#fff", bg: colors.PRIMARY_COLOR }} px={5} py={1.5} rounded="full" color={colors.TEXT_WHITE} fontWeight={"semibold"}>All</Button>
+      <SectionBox HeaderProp={{ px: 4 }} pt={0} bg={colors.BG_COLOR} h={"fit-content"}>
+        <AppContainer  borderBottom={`1px solid ${colors.DIVIDER}`} bg={colors.BG_COLOR} pos={"sticky"} left={0} top={0} zIndex={MAX_DEPTH - 20}>
 
-          <Button onClick={() => setType("song")} aria-selected={type === "song"} _selected={{ color: "#fff", bg: colors.PRIMARY_COLOR }} px={5} py={1.5} rounded="full" color={colors.TEXT_WHITE} fontWeight={"semibold"}>Song</Button>
+          <HStack px={4} py={2} alignItems={"center"}>
+            <Button onClick={() => setType("")} aria-selected={type === ""} _selected={{ color: "#fff", bg: colors.PRIMARY_COLOR }} px={5} py={1.5} rounded="full" color={colors.TEXT_DARK} fontWeight={"semibold"}>All</Button>
 
-          <Button onClick={() => setType("music-video")} aria-selected={type === "music-video"} _selected={{ color: "#fff", bg: colors.PRIMARY_COLOR }} px={5} py={1.5} rounded="full" color={colors.TEXT_WHITE} fontWeight={"semibold"}>Video</Button>
+            <Button onClick={() => setType("song")} aria-selected={type === "song"} _selected={{ color: "#fff", bg: colors.PRIMARY_COLOR }} px={5} py={1.5} rounded="full" color={colors.TEXT_DARK} fontWeight={"semibold"}>Song</Button>
 
-          <Button onClick={() => setType("beat")} aria-selected={type === "beat"} _selected={{ color: "#fff", bg: colors.PRIMARY_COLOR }} px={5} py={1.5} rounded="full" color={colors.TEXT_WHITE} fontWeight={"semibold"}>Beat</Button>
-          {/* <Tab _selected={{ color: "#fff", bg: colors.PRIMARY_COLOR }} px={5} py={1.5} rounded="full" color={colors.TEXT_GRAY} fontWeight={"semibold"}>Live</Tab> */}
-        </HStack>
+            <Button onClick={() => setType("music-video")} aria-selected={type === "music-video"} _selected={{ color: "#fff", bg: colors.PRIMARY_COLOR }} px={5} py={1.5} rounded="full" color={colors.TEXT_DARK} fontWeight={"semibold"}>Video</Button>
+
+            <Button onClick={() => setType("beat")} aria-selected={type === "beat"} _selected={{ color: "#fff", bg: colors.PRIMARY_COLOR }} px={5} py={1.5} rounded="full" color={colors.TEXT_DARK} fontWeight={"semibold"}>Beat</Button>
+            {/* <Tab _selected={{ color: "#fff", bg: colors.PRIMARY_COLOR }} px={5} py={1.5} rounded="full" color={colors.TEXT_GRAY} fontWeight={"semibold"}>Live</Tab> */}
+          </HStack>
+        </AppContainer>
         <AppContainer>
           {/* TRAVERSE THROUGH THE [POST] ARRAY */}
           {isLoading ? (
             <CustomLoader />
           ) : contents.length ? contents.map((content, index) => (
             <Stack spacing={6} key={index}>
-              <FeedCard key={content._id} {...content} />
+              <FeedCard key={content._id} contents={contents}  setContents={setContents} {...content} />
             </Stack>
           )) : (
             <EmptyState />

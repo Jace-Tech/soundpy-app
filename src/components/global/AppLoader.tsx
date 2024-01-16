@@ -26,6 +26,7 @@ const AppLoader: React.FC<AppLoaderProps> = ({ hasBg }) => {
               preserveAspectRatio: 'xMidYMid slice'
             }
           }}
+          isClickToPauseDisabled
         />
       </Box>
     </Center>

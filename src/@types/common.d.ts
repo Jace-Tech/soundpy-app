@@ -274,14 +274,49 @@ type TransactionDataType = {
   isCredit: boolean;
 };
 
+type ReplyType = {
+  _id: string;
+  user: UserData;
+  comment: CommentType;
+  reply: string;
+  date: string;
+}
+
+type CommentReply = {
+  _id: string;
+  user: UserData;
+  content: {
+    _id: string;
+    user: string;
+    type: string;
+    features: string[];
+    title: string;
+    genre: string;
+    coverImage: string;
+    contentUrl: string;
+    price: null;
+    displayCutUrl: null;
+    metadata: any;
+    isDeleted: false;
+    isActive: true;
+    date: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+  comment: string;
+  date: string;
+  createdAt: string;
+  updatedAt: string;
+  reply: ReplyType[];
+};
+
 type ContentFeedType = {
   comments: any[];
   contentUrl: string;
   coverImage: string;
   createdAt: string;
   date: string;
-  displayDurationEnd: any;
-  displayDurationStart: any;
+  displayCutUrl: string | null;
   features: string[];
   genre: GenreType;
   isDeleted: boolean;

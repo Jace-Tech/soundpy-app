@@ -5,15 +5,17 @@ import useColorMode from '../../hooks/useColorMode'
 import { EMPTY_IMAGE } from '../../assets'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface EmptyStateProps {} 
+interface EmptyStateProps {
+  text?: string;
+} 
 
-const EmptyState:React.FC<EmptyStateProps> = () => {
+const EmptyState:React.FC<EmptyStateProps> = ({ text }) => {
   const {colors} = useColorMode()
   return (
     <AppContainer mt={10}>
       <VStack alignItems={"center"} p={2}>
         <Image src={EMPTY_IMAGE} maxW={150} objectFit={"contain"} />
-        <Text size={"sm"} color={colors.TEXT_GRAY}>No contents found</Text>
+        <Text size={"sm"} color={colors.TEXT_GRAY}>{text || "No contents found"}</Text>
       </VStack>
     </AppContainer>
   )

@@ -7,6 +7,7 @@ import { Navigate } from "react-router-dom";
 import UploadContextProvider from "../context/UploadContext";
 import Settings from "../pages/dashboard/settings/Settings";
 import Test from "../pages/Test";
+import Likes from "../pages/dashboard/likes/Likes";
 
 const Dashboard = lazy(() => import("../pages/dashboard/"))
 const Upload = lazy(() => import("../pages/dashboard/upload/Upload"))
@@ -66,6 +67,7 @@ export default [
     , path: "/chat/:username"
   },
   { element: <MyFeed />, path: "/my-feed" },
+  { element: <Likes />, path: "/content/:id/likes" },
   { element: <Test />, path: "/test" },
   { element: <Wallet />, path: "/wallet" },
   { element: <Playlist />, path: "/playlist" },

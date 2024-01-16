@@ -15,6 +15,14 @@ export const GET_USER_PROFILE_ENDPOINT = (username: string) => BASE_URL + "/prof
 // GENRE
 export const GENRE_ENDPOINT = BASE_URL + "/genre"
 
+// LIKES
+export const GET_CONTENT_LIKE_ENDPOINT = (id: string) =>  BASE_URL + `/content/${id}/likes` 
+
+
+// COMMENT
+export const COMMENT_ENDPOINT = (id: string) =>  BASE_URL +  `/content/${id}/comment` 
+export const COMMENT_REPLY_ENDPOINT = (id: string) =>  BASE_URL + `/content/comment/${id}/reply` 
+
 
 //CONTENT
 export const POST_CONTENT_ENDPOINT = BASE_URL + "/content/create"

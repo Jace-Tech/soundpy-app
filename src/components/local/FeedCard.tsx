@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { Avatar, Box, Button, Card, CardBody, CardFooter, CardHeader, Center, CircularProgress, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, Flex, FormControl, HStack, Heading, Icon, IconButton, IconProps, Image, Menu, MenuButton, MenuList, Spacer, Stack, StackProps, Text, Textarea, useDisclosure } from '@chakra-ui/react'
+import { Avatar, AvatarGroup, Box, Button, Card, CardBody, CardFooter, CardHeader, Center, CircularProgress, CloseButton, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, Flex, FormControl, HStack, Heading, Icon, IconButton, IconProps, Image, Menu, MenuButton, MenuList, Spacer, Stack, StackProps, Text, Textarea, useDisclosure } from '@chakra-ui/react'
 import React, { useState } from 'react'
 import useColorMode from '../../hooks/useColorMode';
 import { WELCOME_BG_IMAGE } from '../../assets';
-import { IoEllipsisVertical, IoEyeOffOutline, IoFlagSharp, IoNotificationsOffOutline, IoPersonAdd, IoPlay } from 'react-icons/io5';
+import { IoEllipsisVertical, IoEyeOffOutline, IoFlagSharp, IoNotificationsOffOutline, IoPersonAdd } from 'react-icons/io5';
 import { IoIosShareAlt } from 'react-icons/io';
 import { MdBlock, MdPlaylistAdd, MdChat, } from 'react-icons/md';
 import { BsChatFill, BsDot, BsHeart, BsHeartFill } from 'react-icons/bs';
@@ -15,25 +15,28 @@ import { TERTIARY_COLOR } from '../../utils/colors';
 import ContentMenuItem from './ContentMenuItem';
 import { useAppSelector } from '../../store/hooks';
 import { addComment, blockContent, followUser, likeContent } from '../../apis/user';
-import { useNavigate, Link as ReactLink } from 'react-router-dom';
+import { useNavigate, Link as ReactLink, Link } from 'react-router-dom';
 import useAlert from '../../hooks/useAlert';
 import { formatNumber } from '../../utils/helper';
 import { addToPlaylist } from '../../apis/playlist';
 // import { useGlobalContext } from '../../context';
 import * as dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import EmptyState from '../global/EmptyState';
 import CommentCard from './CommentCard';
 import usePayment from '../../hooks/usePayment';
 import { contentPayment } from '../../apis/payment';
+import { postReply } from '../../apis/content';
 dayjs.extend(relativeTime)
 
 
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface FeedCardProps extends ContentFeedType { }
+interface FeedCardProps extends ContentFeedType { 
+  setContents?: React.Dispatch<React.SetStateAction<ContentFeedType[]>>;
+  contents?: ContentFeedType[];
+}
 
-const FeedCard: React.FC<FeedCardProps> = ({ title, createdAt, type, price, user, _id, isPurchased, coverImage, likes, comments, contentUrl, genre, playlists }) => {
+const FeedCard: React.FC<FeedCardProps> = ({ contents, setContents, title, createdAt, type, price, user, _id, isPurchased, coverImage, likes, comments, contentUrl, genre, playlists }) => {
   const me = useAppSelector(state => state.userStore.user)
   const navigate = useNavigate()
 
@@ -53,10 +56,9 @@ const FeedCard: React.FC<FeedCardProps> = ({ title, createdAt, type, price, user
   const [isPurchasedState, setIsPurchased] = useState<boolean>(isPurchased)
   const [isLiked, setIsLiked] = useState(() => !!(likes.find((like) => like!.user?._id === me!._id)))
 
-  const [likeData] = useState<LikeDataType[]>(likes)
-  const [commentData, setCommentData] = useState<CommentType[]>(comments)
+  const [commentData, setCommentData] = useState<CommentReply[]>(comments)
   const [playListData, setPlaylistData] = useState<PlaylistType[]>(playlists);
-
+  const [isReplying, setIsReplying] = useState<CommentReply | null>(null)
   // console.log(isLiking, isCommenting)
 
   const CARD_WITH_BG = {
@@ -77,13 +79,21 @@ const FeedCard: React.FC<FeedCardProps> = ({ title, createdAt, type, price, user
     bg: CARD_WITH_BG
   }
 
-  // GODSON'S
   // FUNCTION TO LIKE CONTENT
   const handleLike = async () => {
     try {
       openLiking()
       const result = await likeContent(_id, token?.token! as string)
       if (!result.success) throw new Error(result.message)
+
+      // UPDATE CONTENT 
+      const index = contents.findIndex(item => item._id === _id)
+      if(index !== -1) {
+        const prevItems = [...contents]
+        prevItems[index] = result.data
+        console.log("PREV:", prevItems)
+        setContents(prevItems) 
+      }
 
       if (result.message.toLowerCase().includes("unlike")) {
         setIsLiked(false)
@@ -92,6 +102,7 @@ const FeedCard: React.FC<FeedCardProps> = ({ title, createdAt, type, price, user
       else {
         setIsLiked(true)
       }
+
       showAlert(result.message, "success")
     }
     catch (err: any) {
@@ -146,6 +157,32 @@ const FeedCard: React.FC<FeedCardProps> = ({ title, createdAt, type, price, user
       
       setCommentData(prev => ([result.data, ...prev]))
       setComment("")
+      showAlert(result.message, "success")
+    }
+    catch (error: any) {
+      showAlert(error.message, "error")
+    }
+    finally {
+      closeCommenting()
+    }
+  }
+
+  // FUNCTION TO ADD COMMENT
+  const handleReply = async () => {
+    try {
+      openCommenting()
+      const result = await postReply( token?.token! as string, isReplying._id, comment)
+      if (!result.success) throw new Error(result.message)
+      
+      const prevData = [...commentData]
+      const index = prevData.findIndex(comment => comment._id === isReplying._id)
+      prevData[index] = {
+        ...prevData[index],
+        reply: [result.data, ...prevData[index].reply]
+      }
+      setCommentData(prevData)
+      setComment("")
+      setIsReplying(null)
       showAlert(result.message, "success")
     }
     catch (error: any) {
@@ -229,12 +266,32 @@ const FeedCard: React.FC<FeedCardProps> = ({ title, createdAt, type, price, user
       >
         <Drawer placement={'bottom'} onClose={onClose} isOpen={isOpen}>
           <DrawerOverlay />
-          <DrawerContent h={500} bg={colors.BG_COLOR}>
-            <DrawerHeader color={colors.TEXT_WHITE} borderBottomWidth='1px'>Comments</DrawerHeader>
+          <DrawerContent h={500} bg={colors.BG_COLOR} borderTopRadius={"lg"}>
+            <DrawerHeader borderBottomWidth='1px' borderBottomColor={colors.DIVIDER}>
+              <HStack alignItems={"center"}>
+                <Text color={colors.TEXT_WHITE}>Comment</Text>
+                <Spacer />
+                { likes?.length ? (
+                  <Link to={`/content/${_id}/likes`}>
+                    <HStack alignItems={"center"}>
+                      <HStack spacing={1}>
+                        <Icon color={"red.500"} fontSize={["md", "lg", "xl"]} as={BsHeartFill} />
+                        <Text fontSize={"xs"} color={colors.TEXT_WHITE}>{likes.length}</Text>
+                      </HStack>
+                      <AvatarGroup size='xs' max={2}>
+                        {likes.map(like => (
+                          <Avatar  name={like?.user?.musicName || like?.user?.username} src={like.user?.profileImage} />
+                        ))}
+                      </AvatarGroup>
+                    </HStack>
+                  </Link>
+                ) : null }
+              </HStack>
+            </DrawerHeader>
             <DrawerBody overflowY={"auto"}>
               <Stack spacing={2}>
                 { commentData.length ? commentData.map(comment => (
-                  <CommentCard key={_id} {...comment} />
+                  <CommentCard setIsReplying={setIsReplying} key={_id} {...comment} />
                 )) : (
                   <Center flex={1} pt={5}>
                     <Text color={colors.TEXT_GRAY}>No comments</Text>
@@ -242,11 +299,25 @@ const FeedCard: React.FC<FeedCardProps> = ({ title, createdAt, type, price, user
                 ) }
               </Stack>
             </DrawerBody>
-            <DrawerFooter>
+            <DrawerFooter pos={"relative"} w={"100%"}>
+              { isReplying && 
+              <Stack mx={6} bg={colors.BG_COLOR} right={0} py={2} pos={"absolute"} bottom={"85%"} left={0}>
+                <HStack alignItems={"center"} bg={hoverColor} p={3}>
+                  <Stack borderLeft={`3px solid ${colors.DIVIDER}`} pl={2} spacing={1} flex={1}>
+                    <Flex as={Link} to={`/profile/${isReplying?.user?.username}`} alignItems={'center'} gap={3}>
+                      <Heading color={colors.TEXT_WHITE} size={"xs"}>{isReplying?.user?.musicName || isReplying?.user?.username}</Heading>
+                      <Text color={colors.TEXT_GRAY} fontSize={'xs'}>{dayjs(isReplying?.date).fromNow()}</Text>
+                    </Flex>
+                    <Text color={colors.TEXT_DARK} fontSize={"sm"}>{isReplying?.comment}</Text>
+                  </Stack>
+                  <CloseButton pos={"static"} color={colors.TEXT_WHITE} onClick={() => setIsReplying(null)} />
+                </HStack>
+              </Stack>
+              }
               <FormControl>
                 <Flex flexDirection={'row'} alignItems={'end'} gap={2}>
-                  <Textarea onChange={(e) => setComment(e.target.value)} size={'sm'} rows={1} variant={"outline"}  placeholder={`Add comment for ${user?.username}`}></Textarea>
-                  <CustomButton isLoading={isCommenting} onClick={handleAddComment}>Send</CustomButton>
+                  <Textarea  color={colors.TEXT_WHITE} onChange={(e) => setComment(e.target.value)} size={'sm'} rows={1} variant={"outline"} placeholder={`Add comment for ${user?.username}`} value={comment}></Textarea>
+                  <CustomButton isLoading={isCommenting} onClick={isReplying ? handleReply : handleAddComment}>Send</CustomButton>
                 </Flex>
               </FormControl>
             </DrawerFooter>
@@ -363,7 +434,7 @@ const FeedCard: React.FC<FeedCardProps> = ({ title, createdAt, type, price, user
                   iconProps={{ color: "red.600" }}
                   isLoading={isLiking}
                   icon={isLiked ? BsHeartFill : BsHeart}
-                  text={formatNumber(likeData.length)}
+                  text={formatNumber(likes.length)}
                 />
 
                 <ContentFooterItem

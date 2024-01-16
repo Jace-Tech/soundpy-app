@@ -29,7 +29,7 @@ const PriceComponent: React.FC<PriceComponentProp> = ({ control }) => {
       <HStack maxW='320px'>
         {/* <Button {...getDecrementButtonProps()} color={"#fff"} bgColor={colors.TEXT_DARK}>-</Button> */}
         <InputGroup>
-          <Input borderColor={colors.DIVIDER} fontSize={"sm"} color={colors.TEXT_WHITE} {...field}  />
+          <Input maxLength={5} borderColor={colors.DIVIDER} fontSize={"sm"} color={colors.TEXT_WHITE} {...field}  />
           <InputRightAddon borderColor={colors.DIVIDER} color={colors.TEXT_WHITE} bgColor={colors.DIVIDER} children="π" />
         </InputGroup>
         {/* <Button {...getIncrementButtonProps()}color={"#fff"} bgColor={colors.TEXT_DARK}>+</Button> */}

@@ -11,8 +11,8 @@ interface SectionBoxProps extends StackProps {
 const SectionBox: React.FC<SectionBoxProps> = ({ sectionTitle, children, HeaderProp, ...prop }) => {
   const { colors } = useColorMode()
   return (
-    <Stack {...prop} py={6}>
-      <Heading mb={4} color={colors.TEXT_WHITE} size={"md"} {...HeaderProp}>{sectionTitle}</Heading>
+    <Stack py={6} {...prop}>
+      { sectionTitle  &&  <Heading mb={4} color={colors.TEXT_WHITE} size={"md"} {...HeaderProp}>{sectionTitle}</Heading>}
       { children }
     </Stack>
   )
