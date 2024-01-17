@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { Avatar, AvatarGroup, Box, Button, Card, CardBody, CardFooter, CardHeader, Center, CircularProgress, CloseButton, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, Flex, FormControl, HStack, Heading, Icon, IconButton, IconProps, Image, Menu, MenuButton, MenuList, Spacer, Stack, StackProps, Text, Textarea, useDisclosure } from '@chakra-ui/react'
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import useColorMode from '../../hooks/useColorMode';
 import { WELCOME_BG_IMAGE } from '../../assets';
 import { IoEllipsisVertical, IoEyeOffOutline, IoFlagSharp, IoNotificationsOffOutline, IoPersonAdd } from 'react-icons/io5';
@@ -60,6 +60,7 @@ const FeedCard: React.FC<FeedCardProps> = ({ contents, setContents, title, creat
   const [playListData, setPlaylistData] = useState<PlaylistType[]>(playlists);
   const [isReplying, setIsReplying] = useState<CommentReply | null>(null)
   // console.log(isLiking, isCommenting)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const CARD_WITH_BG = {
     bg: hoverColor,
@@ -256,6 +257,12 @@ const FeedCard: React.FC<FeedCardProps> = ({ contents, setContents, title, creat
     a.remove()
   }
 
+
+  const handleSetReply = (data: CommentReply) => {
+    setIsReplying(data)
+    textareaRef?.current.focus?.()
+  }
+
   return (
     <>
       <Card w={"100%"}
@@ -291,7 +298,7 @@ const FeedCard: React.FC<FeedCardProps> = ({ contents, setContents, title, creat
             <DrawerBody overflowY={"auto"}>
               <Stack spacing={2}>
                 { commentData.length ? commentData.map(comment => (
-                  <CommentCard setIsReplying={setIsReplying} key={_id} {...comment} />
+                  <CommentCard setIsReplying={handleSetReply} key={_id} {...comment} />
                 )) : (
                   <Center flex={1} pt={5}>
                     <Text color={colors.TEXT_GRAY}>No comments</Text>
@@ -316,7 +323,7 @@ const FeedCard: React.FC<FeedCardProps> = ({ contents, setContents, title, creat
               }
               <FormControl>
                 <Flex flexDirection={'row'} alignItems={'end'} gap={2}>
-                  <Textarea  color={colors.TEXT_WHITE} onChange={(e) => setComment(e.target.value)} size={'sm'} rows={1} variant={"outline"} placeholder={`Add comment for ${user?.username}`} value={comment}></Textarea>
+                  <Textarea ref={textareaRef} color={colors.TEXT_WHITE} onChange={(e) => setComment(e.target.value)} size={'sm'} rows={1} variant={"outline"} placeholder={`Add comment for ${user?.username}`} value={comment}></Textarea>
                   <CustomButton isLoading={isCommenting} onClick={isReplying ? handleReply : handleAddComment}>Send</CustomButton>
                 </Flex>
               </FormControl>

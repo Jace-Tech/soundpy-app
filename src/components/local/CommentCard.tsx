@@ -12,7 +12,7 @@ dayjs.extend(relativeTime)
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface CommentCardProps extends CommentReply { 
-    setIsReplying: React.Dispatch<React.SetStateAction<CommentReply>>;
+    setIsReplying?: (data: CommentReply) => void;
 }
 
 const CommentCard: React.FC<CommentCardProps> = (prop) => {
@@ -30,7 +30,7 @@ const CommentCard: React.FC<CommentCardProps> = (prop) => {
             />
             <Collapse in={isOpen} animateOpacity>
                 <Stack ml={4} pl={2} py={4} borderLeft={`1px solid ${colors.DIVIDER}`}>
-                    { prop.reply.map(reply => (
+                    { prop?.reply && prop.reply.map(reply => (
                         <UserCommentComponent date={reply.date} key={`reply-${reply._id}`} comment={reply.reply} user={reply.user}  />
                     )) }
                 </Stack>
@@ -50,7 +50,8 @@ interface UserCommentComponentProp {
     comment: string;
     date: string;
     prop?: any;
-    setIsReplying?: React.Dispatch<React.SetStateAction<CommentReply>>
+    // setIsReplying?: React.Dispatch<React.SetStateAction<CommentReply>>
+    setIsReplying?: (data: CommentReply) => void;
 }
 const UserCommentComponent: React.FC<UserCommentComponentProp> = ({ user, comment, date, setIsReplying, prop }) => {
     const { colors, hoverColor } = useColorMode()

@@ -35,7 +35,6 @@ const Welcome: React.FC<WelcomeProps> = () => {
         },
         accessToken: result.accessToken
       })
-      console.log("AUTH RES:", authResult)
       if (!authResult.success) throw new Error(authResult.message)
       dispatch(loginSucess(authResult.data as any))
 
