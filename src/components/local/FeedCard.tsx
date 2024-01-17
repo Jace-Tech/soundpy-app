@@ -26,6 +26,7 @@ import CommentCard from './CommentCard';
 import usePayment from '../../hooks/usePayment';
 import { contentPayment } from '../../apis/payment';
 import { postReply } from '../../apis/content';
+import { MAX_DEPTH } from '../../utils/constant';
 dayjs.extend(relativeTime)
 
 
@@ -352,7 +353,7 @@ const FeedCard: React.FC<FeedCardProps> = ({ contents, setContents, title, creat
                   icon={<IoEllipsisVertical />}
                   variant='link'
                 />
-                <MenuList shadow={"lg"} bg={colors.BG_COLOR} border={colors.BG_COLOR}>
+                <MenuList zIndex={MAX_DEPTH - 10} shadow={"lg"} bg={colors.BG_COLOR} border={colors.BG_COLOR}>
                   {user?._id !== me?._id && (
                     <>
                       <ContentMenuItem
