@@ -1,14 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react'
 import DashLayout from '../../../components/global/DashLayout'
-import { Avatar, Badge, Box, Container, HStack, Heading, IconButton, Spacer, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useDisclosure } from '@chakra-ui/react'
+import { Avatar, Badge, Box, Button, Container, HStack, Heading, IconButton, Spacer, Stack, Text, useDisclosure } from '@chakra-ui/react'
 import useColorMode from '../../../hooks/useColorMode'
 import { useNavigate, useParams } from 'react-router-dom'
 import { BiArrowBack, BiSearch } from 'react-icons/bi'
 import { useAppSelector } from '../../../store/hooks'
 import AppContainer from '../../../components/global/AppContainer'
 import CustomButton from '../../../components/global/CustomButton'
-// import FeedCard from '../../../components/local/FeedCard'
 import { MAX_DEPTH } from '../../../utils/constant'
 import { DEFAULT_BG_IMAGE } from '../../../assets'
 import { useGlobalContext } from '../../../context'
@@ -16,7 +15,7 @@ import { getUserProfile } from '../../../apis/profile'
 import useAlert from '../../../hooks/useAlert'
 import ProfileSkeleton from '../../../components/partials/ProfileSkeleton'
 import { formatNumber } from '../../../utils/helper'
-import { getUserContent } from '../../../apis/content'
+import { getUserContentByUsername } from '../../../apis/content'
 import EmptyState from '../../../components/global/EmptyState'
 import FeedCard from '../../../components/local/FeedCard'
 import usePagination from '../../../hooks/usePagination'
@@ -24,6 +23,8 @@ import CustomLoader from '../../../components/global/CustomLoader'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface ProfileProps { }
+
+
 
 const Profile: React.FC<ProfileProps> = () => {
   const { colors, hoverColor } = useColorMode()
@@ -34,13 +35,24 @@ const Profile: React.FC<ProfileProps> = () => {
   const param = useParams()
   const { showAlert } = useAlert()
   const navigate = useNavigate()
-  const { data, isLoading: isFetching, handleFetchRequest, perPage, page } = usePagination((page, perPage, filter) => getUserContent(user?._id, token!.token, page, perPage, filter))
+  const { data, isLoading: isFetching, handleFetchRequest, handleFilterRequest, perPage, page } = usePagination((page, perPage, filter) => getUserContentByUsername(param?.username, token!.token, page, perPage, filter))
+  const [type, setType] = useState<ContentType>("")
 
   const { setMainHeight } = useGlobalContext()
 
   useEffect(() => {
     setContent(data)
   }, [data])
+
+  const handleGetType = () => {
+    if (!type) return handleFetchRequest(page, perPage)
+    return handleFilterRequest(`type=${type}`)
+  }
+
+  useEffect(() => {
+    handleGetType()
+  }, [type])
+
 
   useEffect(() => {
     if (!user) return
@@ -173,46 +185,31 @@ const Profile: React.FC<ProfileProps> = () => {
         </HStack>
       </AppContainer>
 
+      <AppContainer borderBottom={`1px solid ${colors.DIVIDER}`} bg={colors.BG_COLOR} pos={"sticky"} left={0} top={0} zIndex={MAX_DEPTH - 20}>
 
-      <Tabs pos={"relative"} onChange={(...index) => console.log("tabs:", index)} borderColor={colors.DIVIDER} variant={"unstyled"}>
+        <HStack px={4} py={2} alignItems={"center"}>
+          <Button onClick={() => setType("")} aria-selected={type === ""} _selected={{ color: "#fff", bg: colors.PRIMARY_COLOR }} px={5} py={1.5} rounded="full" color={colors.TEXT_DARK} fontWeight={"semibold"}>All</Button>
 
-        <TabList borderBottom={`1px solid ${colors.DIVIDER}`} p={3}>
-          <Container maxW={"container.sm"}>
-            <HStack alignItems={"center"}>
-              <Tab _selected={{ color: "#fff", bg: colors.PRIMARY_COLOR }} px={5} py={1.5} rounded="full" color={colors.TEXT_GRAY} fontWeight={"semibold"}>Video</Tab>
-              <Tab _selected={{ color: "#fff", bg: colors.PRIMARY_COLOR }} px={5} py={1.5} rounded="full" color={colors.TEXT_GRAY} fontWeight={"semibold"}>Song</Tab>
-              <Tab _selected={{ color: "#fff", bg: colors.PRIMARY_COLOR }} px={5} py={1.5} rounded="full" color={colors.TEXT_GRAY} fontWeight={"semibold"}>Beat</Tab>
-              {/* <Tab _selected={{ color: "#fff", bg: colors.PRIMARY_COLOR }} px={5} py={1.5} rounded="full" color={colors.TEXT_GRAY} fontWeight={"semibold"}>Live</Tab> */}
-            </HStack>
-          </Container>
-        </TabList>
-        <TabPanels>
-          <TabPanel color={colors.TEXT_WHITE} px={0}>
-            <AppContainer>
-              {isFetching ? <CustomLoader /> : contents.length ?
-                contents.map(item => <FeedCard key={item._id} {...item} />) : (
-                  <EmptyState />
-                )}
-            </AppContainer>
-          </TabPanel>
-          <TabPanel color={colors.TEXT_WHITE}>
-            <AppContainer>
-              {isFetching ? <CustomLoader /> : contents.length ?
-                contents.map(item => <FeedCard key={item._id} {...item} />) : (
-                  <EmptyState />
-                )}
-            </AppContainer>
-          </TabPanel>
-          <TabPanel color={colors.TEXT_WHITE}>
-            <AppContainer>
-              {isFetching ? <CustomLoader /> : contents.length ?
-                contents.map(item => <FeedCard key={item._id} {...item} />) : (
-                  <EmptyState />
-                )}
-            </AppContainer>
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
+          <Button onClick={() => setType("song")} aria-selected={type === "song"} _selected={{ color: "#fff", bg: colors.PRIMARY_COLOR }} px={5} py={1.5} rounded="full" color={colors.TEXT_DARK} fontWeight={"semibold"}>Song</Button>
+
+          <Button onClick={() => setType("music-video")} aria-selected={type === "music-video"} _selected={{ color: "#fff", bg: colors.PRIMARY_COLOR }} px={5} py={1.5} rounded="full" color={colors.TEXT_DARK} fontWeight={"semibold"}>Video</Button>
+
+          <Button onClick={() => setType("beat")} aria-selected={type === "beat"} _selected={{ color: "#fff", bg: colors.PRIMARY_COLOR }} px={5} py={1.5} rounded="full" color={colors.TEXT_DARK} fontWeight={"semibold"}>Beat</Button>
+        </HStack>
+      </AppContainer>
+
+      <AppContainer py={3}>
+        {/* TRAVERSE THROUGH THE [POST] ARRAY */}
+        {isFetching ? (
+          <CustomLoader />
+        ) : contents.length ? contents.map((content, index) => (
+          <Stack spacing={6} key={index}>
+            <FeedCard key={content._id} contents={contents} setContents={setContent} {...content} />
+          </Stack>
+        )) : (
+          <EmptyState />
+        )}
+      </AppContainer>
     </DashLayout>
   )
 }

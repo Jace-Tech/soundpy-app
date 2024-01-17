@@ -57,12 +57,6 @@ const Dashboard: React.FC<DashboardProps> = () => {
     }
   }, [])
 
-
-  useEffect(() => {
-    console.log("DATA:", data)
-  }, [data])
-  console.log("TOCK:", token)
-
   return (
     <DashLayout
       header={<Header borderBottom={`1px solid ${colors.DIVIDER}`} />}

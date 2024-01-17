@@ -1,4 +1,4 @@
-import { APP_SETTINGS_PLAYLIST, COMMENT_REPLY_ENDPOINT, GET_CONTENT_ENDPOINT, GET_CONTENT_LIKE_ENDPOINT, GET_USER_CONTENT_ENDPOINT } from "./base"
+import { APP_SETTINGS_PLAYLIST, COMMENT_REPLY_ENDPOINT, GET_CONTENT_ENDPOINT, GET_CONTENT_LIKE_ENDPOINT, GET_USER_CONTENT_ENDPOINT, GET_USER_CONTENT_USERNAME_ENDPOINT } from "./base"
 
 
 // GET ALL CONTENT POST
@@ -54,6 +54,25 @@ export const getUserContent = async (id: string, token: string, page: number = 1
             }
         }
         const request = await fetch(GET_USER_CONTENT_ENDPOINT(id, page, perPage, query), options)
+        const response = await request.json()
+        return response
+    } catch (error: any) {
+        console.log("ERROR:", error.message)
+        return { message: error.message, success: false, data: null }
+    }
+}
+
+// GET ALL CONTENT POST
+export const getUserContentByUsername = async (username: string, token: string, page: number = 1, perPage: number = 12, query?: string) => {
+    try {
+        const options: RequestInit = {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            }
+        }
+        const request = await fetch(GET_USER_CONTENT_USERNAME_ENDPOINT(username, page, perPage, query), options)
         const response = await request.json()
         return response
     } catch (error: any) {

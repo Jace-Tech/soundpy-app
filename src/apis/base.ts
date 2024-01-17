@@ -1,6 +1,10 @@
-// export const BASE_URL = "http://localhost:5100/api/v1"
 // export const BASE_URL = "https://play-server.onrender.com/api/v1"
-export const BASE_URL = "https://soundpy-api.onrender.com/api/v1"
+
+// DEV SERVER
+export const BASE_URL = "http://localhost:5100/api/v1"
+
+// PROD SERVER
+// export const BASE_URL = "https://soundpy-api.onrender.com/api/v1"
 
 
 // AUTH
@@ -28,6 +32,7 @@ export const COMMENT_REPLY_ENDPOINT = (id: string) =>  BASE_URL + `/content/comm
 export const POST_CONTENT_ENDPOINT = BASE_URL + "/content/create"
 export const GET_CONTENT_ENDPOINT = (page: number, perPage: number, query?: string) => `${BASE_URL}/content?page=${page}&perPage=${perPage}${query ? `&${query}`: ""}`
 export const GET_USER_CONTENT_ENDPOINT = (id: string, page: number, perPage: number, query?: string) => `${BASE_URL}/content/user/${id}?page=${page}&perPage=${perPage}${query ? `&${query}`: ""}`
+export const GET_USER_CONTENT_USERNAME_ENDPOINT = (username: string, page: number, perPage: number, query?: string) => `${BASE_URL}/content/${username}/user?page=${page}&perPage=${perPage}${query ? `&${query}`: ""}`
 
 // PLAYLIST
 export const ADD_PLAYLIST = BASE_URL + "/playlist/"

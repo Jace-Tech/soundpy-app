@@ -99,7 +99,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = () => {
   }
 
 
-
   return (
     <Box h={"100vh"} bg={colors.BG_COLOR} pt={10} onScroll={() => console.log(window.scrollY)}>
       <AppBar
