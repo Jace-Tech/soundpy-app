@@ -13,6 +13,7 @@ import CustomLoader from '../../components/global/CustomLoader';
 import EmptyState from '../../components/global/EmptyState';
 import usePagination from '../../hooks/usePagination';
 import { MAX_DEPTH } from '../../utils/constant';
+import { FOOTER_CAP_HEIGHT } from './chat/footer_variants';
 // import { log } from 'console';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -58,9 +59,8 @@ const Dashboard: React.FC<DashboardProps> = () => {
   }, [])
 
   return (
-    <DashLayout
-      header={<Header borderBottom={`1px solid ${colors.DIVIDER}`} />}
-    >
+    <DashLayout capHeight={FOOTER_CAP_HEIGHT}>
+      <Header borderBottom={`1px solid ${colors.DIVIDER}`} />
       <SectionBox HeaderProp={{ px: 4 }} pt={0} bg={colors.BG_COLOR} h={"fit-content"}>
         <AppContainer  borderBottom={`1px solid ${colors.DIVIDER}`} bg={colors.BG_COLOR} pos={"sticky"} left={0} top={0} zIndex={MAX_DEPTH - 20}>
 

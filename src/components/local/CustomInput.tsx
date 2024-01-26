@@ -47,7 +47,7 @@ const CustomInput: React.FC<CustomInputProps> = ({ control, label, value, name, 
           <Select color={colors.TEXT_WHITE} _placeholder={{ color: colors.TEXT_GRAY }} fontSize={"sm"} {...field} {...InputProps as SelectProps}>
             <option value="" selected disabled>Choose {label}</option>
             {selectOptions?.map((option) => (
-              <option key={option.label} value={option.value}>{option.label}</option>
+              <option key={option.label} selected={value === option.value} value={option.value}>{option.label}</option>
             ))}
           </Select>
         ) : isTextArea ? (

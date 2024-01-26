@@ -61,6 +61,9 @@ type ProfileData = {
   musicCareer: string | null;
   followers: FollowType[];
   following: FollowType[];
+  xLink?: string;
+  instaLink?: string;
+  tiktokLink?: string;
 };
 
 type UserData = {
@@ -80,6 +83,9 @@ type UserData = {
   accessToken?: string;
   email?: string;
   role?: string;
+  xLink?: string;
+  instaLink?: string;
+  tiktokLink?: string;
 };
 
 interface PaymentDTO {

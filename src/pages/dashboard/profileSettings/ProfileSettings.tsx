@@ -3,7 +3,7 @@
 
 import React, { useEffect, useRef, useState } from 'react'
 import AppBar from '../../../components/global/AppBar'
-import { Avatar, AvatarBadge, Box, Button, Center, CircularProgress, IconButton, Link, Stack, Text, useDisclosure } from '@chakra-ui/react'
+import { Avatar, AvatarBadge, Box, Button, Center, CircularProgress, IconButton, Link, Stack, HStack, Text, Heading, useDisclosure } from '@chakra-ui/react'
 import useColorMode from '../../../hooks/useColorMode'
 import { AiFillCamera } from "react-icons/ai"
 import AppContainer from '../../../components/global/AppContainer'
@@ -37,7 +37,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = () => {
   const { showAlert } = useAlert()
   const bgInputRef = useRef(null)
   const avaterInputRef = useRef(null)
-
 
   const fetchGenres = async () => {
     if (!token) return
@@ -81,7 +80,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = () => {
   const handleUpdateData = async () => {
     try  {
       const data = getValues()
-      console.log("DATA:", data)
+
       const result = await updateProfile(data, token?.token! as string)
       console.log("RESULT:", result)
       if (!result.success) throw new Error(result.message)
@@ -145,7 +144,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = () => {
       </Box>
 
       {isFetching ? (
-        <CircularProgress isIndeterminate size={8} color='gray.400' />
+        <AppContainer>
+          <CircularProgress isIndeterminate size={6} color='gray.400' />
+        </AppContainer>
       ) : !genres ? (
         <AppContainer>
           <Stack>
@@ -205,17 +206,49 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = () => {
             <CustomInput
               control={control}
               name={"genre"}
-              value={userData?.genre?.name}
+              value={userData?.genre?._id}
               rules={{ required: "Music genre is required" }}
               isSelect
               selectOptions={genres.map(item => ({ label: item.name, value: item._id }))}
               label={"Music genre"}
             />
           </Stack>
+
+          <Stack as={"section"} id={"social"} spacing={4} pb={10}>
+            <HStack mb={4}>
+              <Heading m={0} fontWeight={600} letterSpacing={1} textTransform={"uppercase"} fontSize="sm" color={colors.TEXT_DARK}>Social handles</Heading>
+              <Box h={"1px"} flex={1} bg={colors.DIVIDER} />
+            </HStack>
+
+            <CustomInput
+              control={control}
+              name={"xLink"}
+              value={userData?.xLink}
+              InputProps={{ placeholder:"https://x.com/" }}
+              rules={{ minLength: { value: 10, message: "Enter a valid link" } }}
+              label={"X"}
+            />
+
+            <CustomInput
+              control={control}
+              name={"instaLink"}
+              value={userData?.instaLink}
+              InputProps={{ placeholder:"https://instagram.com/" }}
+              rules={{ minLength: { value: 10, message: "Enter a valid link" } }}
+              label={"Instagram"}
+            />
+
+            <CustomInput
+              control={control}
+              name={"tiktokLink"}
+              value={userData?.tiktokLink}
+              InputProps={{ placeholder:"https://tiktok.com/" }}
+              rules={{ minLength: { value: 10, message: "Enter a valid link" } }}
+              label={"Tiktok"}
+            />
+          </Stack>
         </AppContainer>
-
       )}
-
     </Box >
   )
 }

@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react'
 import DashLayout from '../../../components/global/DashLayout'
 import AppBar from '../../../components/global/AppBar'
-import { Button, Checkbox, HStack, Heading, Link, Stack, Text, VStack, Highlight, Drawer, DrawerOverlay, DrawerContent, DrawerBody, useDisclosure } from '@chakra-ui/react'
+import { Button, Checkbox, HStack, Heading, Link, Stack, Text, VStack, Highlight, Drawer, DrawerOverlay, DrawerContent, DrawerBody, useDisclosure, DrawerFooter } from '@chakra-ui/react'
 import useColorMode from '../../../hooks/useColorMode'
 import { useUploadContext } from '../../../context/UploadContext'
 import AppContainer from '../../../components/global/AppContainer'
@@ -13,6 +13,7 @@ import UploadItem from './components/UploadItem'
 import { GiMusicalNotes } from "react-icons/gi"
 import { TbActivityHeartbeat } from "react-icons/tb"
 import { IoVideocam } from "react-icons/io5"
+import CustomButton from '../../../components/global/CustomButton'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface UploadProps { }
@@ -35,15 +36,6 @@ const Upload: React.FC<UploadProps> = () => {
         borderBottomWidth={1}
         borderColor={colors.DIVIDER}
         page='Upload'
-        RightElement={
-          <Button
-            size={"sm"}
-            variant={"link"}
-            colorScheme='teal'
-            onClick={handleOpenFilePicker}
-            isDisabled={!agreed || !contentType}
-          >Continue</Button>
-        }
       />}
     >
       <AppContainer py={8}>
@@ -89,6 +81,14 @@ const Upload: React.FC<UploadProps> = () => {
                   </Stack>
                 </HStack>
               </DrawerBody>
+              <DrawerFooter>
+                <CustomButton
+                  w={"full"}
+                  colorScheme='teal'
+                  onClick={handleOpenFilePicker}
+                  isDisabled={!agreed || !contentType}
+                >Continue</CustomButton>
+              </DrawerFooter>
             </DrawerContent>
           </Drawer>
         </VStack>
