@@ -149,3 +149,15 @@ export const formatNumber = (num: number) => {
     return (num / 1000000000).toFixed(1) + 'b';
   }
 }
+
+
+export const  isElementInView = (element: HTMLElement) => {
+  const rect = element.getBoundingClientRect();
+
+  return (
+    rect.top >= 0 &&
+    rect.left >= 0 &&
+    rect.bottom <= window.innerHeight &&
+    rect.right <= window.innerWidth
+  );
+}

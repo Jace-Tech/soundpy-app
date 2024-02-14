@@ -48,8 +48,6 @@ const Profile: React.FC<ProfileProps> = () => {
     setContent(data)
   }, [data])
 
-  console.log("USER DATA:", user)
-
   const handleGetType = () => {
     if (!type) return handleFetchRequest(page, perPage)
     showAlert("Update your social handles", "warning")
@@ -279,7 +277,7 @@ useEffect(() => {
           <CustomLoader />
         ) : contents.length ? contents.map((content, index) => (
           <Stack spacing={6} key={index}>
-            <FeedCard key={content._id} contents={contents} setContents={setContent} {...content} />
+            <FeedCard dataId={String(index === (contents.length - 1))} key={content._id} contents={contents} {...content} />
           </Stack>
         )) : (
           <EmptyState />

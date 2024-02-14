@@ -275,7 +275,6 @@ const UploadSetting: React.FC<UploadSettingProps> = () => {
             name='genre'
             selectOptions={genres.map(item => ({ label: item.name, value: item._id }))}
             label='Genre'
-            info='Separate names with commas'
             InputProps={{ outline: "none", borderColor: colors.DIVIDER, color: colors.TEXT_WHITE }}
             rules={{ required: "Genre is required" }}
           />

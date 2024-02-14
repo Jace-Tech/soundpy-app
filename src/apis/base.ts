@@ -31,6 +31,8 @@ export const COMMENT_REPLY_ENDPOINT = (id: string) =>  BASE_URL + `/content/comm
 //CONTENT
 export const POST_CONTENT_ENDPOINT = BASE_URL + "/content/create"
 export const GET_CONTENT_ENDPOINT = (page: number, perPage: number, query?: string) => `${BASE_URL}/content?page=${page}&perPage=${perPage}${query ? `&${query}`: ""}`
+export const GET_DELETE_CONTENT_ENDPOINT = (id: string) => `${BASE_URL}/content/${id}/trash`
+export const GET_CONTENT_REACTION = (id: string) => `${BASE_URL}/content/${id}/reactions`
 export const GET_USER_CONTENT_ENDPOINT = (id: string, page: number, perPage: number, query?: string) => `${BASE_URL}/content/user/${id}?page=${page}&perPage=${perPage}${query ? `&${query}`: ""}`
 export const GET_USER_CONTENT_USERNAME_ENDPOINT = (username: string, page: number, perPage: number, query?: string) => `${BASE_URL}/content/${username}/user?page=${page}&perPage=${perPage}${query ? `&${query}`: ""}`
 

@@ -12,9 +12,10 @@ interface DashLayoutProps extends BoxProps {
   footer?: React.ReactElement;
   hideFooter?: boolean;
   capHeight?: number;
+  handleRefresh?: () => void;
 } 
 
-const DashLayout:React.FC<DashLayoutProps> = ({header, footer, children, hideFooter, capHeight, ...prop }) => {
+const DashLayout:React.FC<DashLayoutProps> = ({header, handleRefresh, footer, children, hideFooter, capHeight, ...prop }) => {
   const { isDark } = useColorMode()
   const { mainHeight } = useGlobalContext()
   const user = useAppSelector(state => state.userStore.user)
@@ -28,7 +29,8 @@ const DashLayout:React.FC<DashLayoutProps> = ({header, footer, children, hideFoo
             Please complete your profile. <Link to={"/profile/settings"} ml={1} color={"blue.500"} as={ReactLink}>click here</Link>
         </Alert>
         )}
-      <Box 
+      <Box  
+        id='main-body'
         flex={1} 
         className={`scrollbar ${isDark ? 'dark' : ''}`}
         maxH={mainHeight ? `calc(100vh - ${mainHeight}px)` : capHeight ? `calc(100vh - ${capHeight}px)` : hideFooter? "calc(100vh - 70px)" : "calc(100vh - 125px)"}
@@ -38,7 +40,7 @@ const DashLayout:React.FC<DashLayoutProps> = ({header, footer, children, hideFoo
       >
         { children }
       </Box>
-     { footer ? footer : !hideFooter && <Footer />}
+     { footer ? footer : !hideFooter && <Footer handleRefresh={handleRefresh} />}
     </Flex>
   )
 }

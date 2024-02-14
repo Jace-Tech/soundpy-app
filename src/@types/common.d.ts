@@ -317,7 +317,7 @@ type CommentReply = {
 };
 
 type ContentFeedType = {
-  comments: any[];
+  comments: number;
   contentUrl: string;
   coverImage: string;
   createdAt: string;
@@ -327,8 +327,10 @@ type ContentFeedType = {
   genre: GenreType;
   isDeleted: boolean;
   isPurchased: boolean;
-  likes: LikeDataType[];
-  playlists: PlaylistType[];
+  isLiked: boolean;
+  isMine: boolean;
+  likes: number;
+  playlists: number;
   price: number;
   title: string;
   type: ContentType;

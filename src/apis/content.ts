@@ -1,4 +1,4 @@
-import { APP_SETTINGS_PLAYLIST, COMMENT_REPLY_ENDPOINT, GET_CONTENT_ENDPOINT, GET_CONTENT_LIKE_ENDPOINT, GET_USER_CONTENT_ENDPOINT, GET_USER_CONTENT_USERNAME_ENDPOINT } from "./base"
+import { APP_SETTINGS_PLAYLIST, COMMENT_REPLY_ENDPOINT, GET_CONTENT_ENDPOINT, GET_CONTENT_LIKE_ENDPOINT, GET_CONTENT_REACTION, GET_DELETE_CONTENT_ENDPOINT, GET_USER_CONTENT_ENDPOINT, GET_USER_CONTENT_USERNAME_ENDPOINT } from "./base"
 
 
 // GET ALL CONTENT POST
@@ -54,6 +54,46 @@ export const getUserContent = async (id: string, token: string, page: number = 1
             }
         }
         const request = await fetch(GET_USER_CONTENT_ENDPOINT(id, page, perPage, query), options)
+        const response = await request.json()
+        return response
+    } catch (error: any) {
+        console.log("ERROR:", error.message)
+        return { message: error.message, success: false, data: null }
+    }
+}
+
+
+// GET ALL CONTENT POST
+export const getReaction = async (id: string, token: string) => {
+    try {
+        const options: RequestInit = {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            }
+        }
+        const request = await fetch(GET_CONTENT_REACTION(id), options)
+        const response = await request.json()
+        return response
+    } catch (error: any) {
+        console.log("ERROR:", error.message)
+        return { message: error.message, success: false, data: null }
+    }
+}
+
+
+// HANDLE DELETE CONTENT 
+export const deleteContent = async (id: string, token: string) => {
+    try {
+        const options: RequestInit = {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            }
+        }
+        const request = await fetch(GET_DELETE_CONTENT_ENDPOINT(id), options)
         const response = await request.json()
         return response
     } catch (error: any) {

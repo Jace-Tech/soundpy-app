@@ -1,65 +1,71 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { Avatar, AvatarGroup, Box, Button, Card, CardBody, CardFooter, CardHeader, Center, CircularProgress, CloseButton, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, Flex, FormControl, HStack, Heading, Icon, IconButton, IconProps, Image, Menu, MenuButton, MenuList, Spacer, Stack, StackProps, Text, Textarea, useDisclosure } from '@chakra-ui/react'
+import { Avatar, Box, Button, Card, CardBody, CardFooter, CardHeader, CircularProgress, Drawer, DrawerOverlay, HStack, Heading, Icon, IconButton, IconProps, Image, Menu, MenuButton, MenuList, Spacer, Stack, StackProps, Text, useDisclosure, useTheme } from '@chakra-ui/react'
 import React, { useRef, useState } from 'react'
 import useColorMode from '../../hooks/useColorMode';
 import { WELCOME_BG_IMAGE } from '../../assets';
 import { IoEllipsisVertical, IoEyeOffOutline, IoFlagSharp, IoNotificationsOffOutline, IoPersonAdd } from 'react-icons/io5';
 import { IoIosShareAlt } from 'react-icons/io';
-import { MdBlock, MdPlaylistAdd, MdChat, } from 'react-icons/md';
+import { MdBlock, MdPlaylistAdd, MdChat, MdDelete, } from 'react-icons/md';
 import { BsChatFill, BsDot, BsHeart, BsHeartFill } from 'react-icons/bs';
 
 import { IconType } from 'react-icons';
 import CustomButton from '../global/CustomButton';
 import { TERTIARY_COLOR } from '../../utils/colors';
 import ContentMenuItem from './ContentMenuItem';
-import { useAppSelector } from '../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { addComment, blockContent, followUser, likeContent } from '../../apis/user';
-import { useNavigate, Link as ReactLink, Link } from 'react-router-dom';
+import { useNavigate, Link as ReactLink } from 'react-router-dom';
 import useAlert from '../../hooks/useAlert';
 import { formatNumber } from '../../utils/helper';
 import { addToPlaylist } from '../../apis/playlist';
-// import { useGlobalContext } from '../../context';
 import * as dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import CommentCard from './CommentCard';
 import usePayment from '../../hooks/usePayment';
 import { contentPayment } from '../../apis/payment';
-import { postReply } from '../../apis/content';
+import { deleteContent, getReaction, postReply } from '../../apis/content';
 import { MAX_DEPTH } from '../../utils/constant';
+import CommentContent from './CommentContents';
+import LikesContent from './LikesContents';
+import { populateContent } from '../../store/slices/dataSlice';
 dayjs.extend(relativeTime)
 
 
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface FeedCardProps extends ContentFeedType { 
-  setContents?: React.Dispatch<React.SetStateAction<ContentFeedType[]>>;
+interface FeedCardProps extends ContentFeedType {
   contents?: ContentFeedType[];
+  dataId: string;
 }
 
-const FeedCard: React.FC<FeedCardProps> = ({ contents, setContents, title, createdAt, type, price, user, _id, isPurchased, coverImage, likes, comments, contentUrl, genre, playlists }) => {
+const FeedCard: React.FC<FeedCardProps> = ({ contents, dataId, isLiked, title, createdAt, type, price, user, _id, isPurchased, coverImage, likes, comments, contentUrl, genre, playlists, isMine, features }) => {
   const me = useAppSelector(state => state.userStore.user)
   const navigate = useNavigate()
 
   const { colors, hoverColor } = useColorMode()
   const { isOpen: isCommentOpen } = useDisclosure()
-  const { isOpen: isLiking, onOpen: openLiking, onClose: closeLiking} = useDisclosure()
-  const { isOpen: isFollowing, onOpen: openFollowing, onClose: closeFollowing} = useDisclosure()
-  const { isOpen: isBlocking, onOpen: openBlocking, onClose: closeBlocking} = useDisclosure()
-  const { isOpen: isAdding, onOpen: openAdding, onClose: closeAdding} = useDisclosure()
-  const { isOpen: isCommenting, onOpen: openCommenting, onClose: closeCommenting} = useDisclosure()
+  const { isOpen: isLiking, onOpen: openLiking, onClose: closeLiking } = useDisclosure()
+  const { isOpen: isFollowing, onOpen: openFollowing, onClose: closeFollowing } = useDisclosure()
+  const { isOpen: isBlocking, onOpen: openBlocking, onClose: closeBlocking } = useDisclosure()
+  const { isOpen: isAdding, onOpen: openAdding, onClose: closeAdding } = useDisclosure()
+  const { isOpen: isCommenting, onOpen: openCommenting, onClose: closeCommenting } = useDisclosure()
+  const { isOpen: isGettingReactions, onOpen: openGettingReactions, onClose: closeGettingReactions } = useDisclosure()
   const cardStyle = useAppSelector(state => state.settingStore.cardStyle)
   const token = useAppSelector(state => state.userStore.token)
   const { showAlert } = useAlert()
   const { handlePiPayment, isPaying, openPaying, closePaying } = usePayment()
   const { isOpen, onOpen, onClose, } = useDisclosure()
+  const { isOpen: isDeleting, onOpen: openDeleting, onClose: closeDeleting } = useDisclosure()
   const [comment, setComment] = useState("")
+  const [reactionError, setReactionError] = useState<boolean>(false)
   const [isPurchasedState, setIsPurchased] = useState<boolean>(isPurchased)
-  const [isLiked, setIsLiked] = useState(() => !!(likes.find((like) => like!.user?._id === me!._id)))
+  const [showingLikes, setShowingLikes] = useState<boolean>(false)
 
-  const [commentData, setCommentData] = useState<CommentReply[]>(comments)
-  const [playListData, setPlaylistData] = useState<PlaylistType[]>(playlists);
+  const [commentData, setCommentData] = useState<CommentReply[]>([])
+  const [likesData, setLikesData] = useState<LikeDataType[]>([]);
   const [isReplying, setIsReplying] = useState<CommentReply | null>(null)
+  const theme = useTheme()
+  const dispatch = useAppDispatch()
   // console.log(isLiking, isCommenting)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -90,21 +96,12 @@ const FeedCard: React.FC<FeedCardProps> = ({ contents, setContents, title, creat
 
       // UPDATE CONTENT 
       const index = contents.findIndex(item => item._id === _id)
-      if(index !== -1) {
+      if (index !== -1) {
         const prevItems = [...contents]
         prevItems[index] = result.data
         console.log("PREV:", prevItems)
-        setContents(prevItems) 
+        dispatch(populateContent(prevItems))
       }
-
-      if (result.message.toLowerCase().includes("unlike")) {
-        setIsLiked(false)
-      }
-
-      else {
-        setIsLiked(true)
-      }
-
       showAlert(result.message, "success")
     }
     catch (err: any) {
@@ -141,8 +138,8 @@ const FeedCard: React.FC<FeedCardProps> = ({ contents, setContents, title, creat
       if (!result.success) throw new Error(result.message)
       showAlert(result.message, "success")
     }
-    catch(err: any) {
-      showAlert( err.message, "error")   
+    catch (err: any) {
+      showAlert(err.message, "error")
     }
     finally {
       closeBlocking()
@@ -156,7 +153,7 @@ const FeedCard: React.FC<FeedCardProps> = ({ contents, setContents, title, creat
       const data = { comment }
       const result = await addComment(_id, data, token?.token! as string)
       if (!result.success) throw new Error(result.message)
-      
+
       setCommentData(prev => ([result.data, ...prev]))
       setComment("")
       showAlert(result.message, "success")
@@ -173,14 +170,16 @@ const FeedCard: React.FC<FeedCardProps> = ({ contents, setContents, title, creat
   const handleReply = async () => {
     try {
       openCommenting()
-      const result = await postReply( token?.token! as string, isReplying._id, comment)
+      const result = await postReply(token?.token! as string, isReplying._id, comment)
       if (!result.success) throw new Error(result.message)
-      
+
       const prevData = [...commentData]
       const index = prevData.findIndex(comment => comment._id === isReplying._id)
+      if(index === -1) return
+
       prevData[index] = {
         ...prevData[index],
-        reply: [result.data, ...prevData[index].reply]
+        reply: [result.data, ...prevData[index]?.reply]
       }
       setCommentData(prevData)
       setComment("")
@@ -198,17 +197,17 @@ const FeedCard: React.FC<FeedCardProps> = ({ contents, setContents, title, creat
   // PURCHASE CONTENT
   const handlePurchase = () => {
     const meta = {
-      content: {title, createdAt, type, price, user, _id, isPurchased, coverImage, likes, comments, contentUrl, genre, playlists }
+      content: { title, createdAt, type, price, user, _id, isPurchased, coverImage, likes, comments, contentUrl, genre, playlists }
     }
-    handlePiPayment(+price, `Purchase of ${title}`, "content", meta, ( async (paymentId, txid) => {
+    handlePiPayment(+price, `Purchase of ${title}`, "content", meta, (async (paymentId, txid) => {
       try {
         openPaying()
-        const payload:CompletePaymentPayload = {
+        const payload: CompletePaymentPayload = {
           paymentId,
           txid
         }
         const result = await contentPayment(payload, token.token)
-        if(!result.success) throw new Error(result.message)
+        if (!result.success) throw new Error(result.message)
 
         // UPDATE THE PAYMENT
         setIsPurchased(true)
@@ -217,7 +216,7 @@ const FeedCard: React.FC<FeedCardProps> = ({ contents, setContents, title, creat
         // REDIRECT TO TRANSACTIONS PAGE
         navigate(`/transaction/${result.data.transaction._id}`)
       }
-      catch (err: any){
+      catch (err: any) {
         showAlert(err.message, "error")
       }
       finally {
@@ -226,15 +225,31 @@ const FeedCard: React.FC<FeedCardProps> = ({ contents, setContents, title, creat
     }))
   }
 
+  // DELETE CONTENT
+  const handleDeleteContent = async () => {
+    try {
+      openDeleting()
+      const result = await deleteContent(_id, token.token!)
+      if(!result.success) throw new Error(result.message)
+      showAlert(result.message, "success")
+
+    } 
+    catch (error: any) {
+      showAlert(error.message, "error")
+    }
+    finally {
+      closeDeleting()
+    }
+  }
+
   // ADD TO PLAYLIST
   const handleAddToPlaylist = async () => {
     try {
       openAdding()
       const result = await addToPlaylist(_id, token.token);
-      if(!result.success) throw new Error(result.message)
+      if (!result.success) throw new Error(result.message)
       showAlert(result.message, "success")
-      setPlaylistData(prev => ([result.data, ...prev]))
-    } 
+    }
     catch (err: any) {
       showAlert(err.message, "error")
     }
@@ -259,10 +274,50 @@ const FeedCard: React.FC<FeedCardProps> = ({ contents, setContents, title, creat
   }
 
 
+  const handleOpen = async () => {
+    await handleGetReaction()
+    onOpen()
+  }
+
+  const handleGetReaction = async () => {
+    try {
+      openGettingReactions()
+      setReactionError(false)
+      const result = await getReaction(_id, token.token!)
+      if (!result.success) throw new Error(result.message)
+      setLikesData(result.data.likes)
+      setCommentData(result.data.comments)
+    } catch (error: any) {
+      console.log(error.messsage)
+      setReactionError(true)
+    }
+    finally {
+      closeGettingReactions()
+    }
+  }
+
+
   const handleSetReply = (data: CommentReply) => {
     setIsReplying(data)
     textareaRef?.current.focus?.()
   }
+
+
+  const handlePlay = (event: any) => {
+    const currentAudio = event.target
+
+    const items =[...document.querySelectorAll("[data-playing]")]
+    const prevPlaying = items.find(item => (item as any)?.dataset.playing === "1") as any
+    if(prevPlaying && !prevPlaying.paused) {
+      prevPlaying.pause()
+      prevPlaying.currentTime = 0
+      prevPlaying.setAttribute("data-playing", "0")
+    }
+
+    currentAudio.setAttribute("data-playing", "1")
+    currentAudio?.play()
+  }
+
 
   return (
     <>
@@ -271,65 +326,38 @@ const FeedCard: React.FC<FeedCardProps> = ({ contents, setContents, title, creat
         as={"section"}
         id={_id}
         mb={2}
+        data-id={dataId}
       >
         <Drawer placement={'bottom'} onClose={onClose} isOpen={isOpen}>
           <DrawerOverlay />
-          <DrawerContent h={500} bg={colors.BG_COLOR} borderTopRadius={"lg"}>
-            <DrawerHeader borderBottomWidth='1px' borderBottomColor={colors.DIVIDER}>
-              <HStack alignItems={"center"}>
-                <Text color={colors.TEXT_WHITE}>Comment</Text>
-                <Spacer />
-                { likes?.length ? (
-                  <Link to={`/content/${_id}/likes`}>
-                    <HStack alignItems={"center"}>
-                      <HStack spacing={1}>
-                        <Icon color={"red.500"} fontSize={["md", "lg", "xl"]} as={BsHeartFill} />
-                        <Text fontSize={"xs"} color={colors.TEXT_WHITE}>{likes.length}</Text>
-                      </HStack>
-                      <AvatarGroup size='xs' max={2}>
-                        {likes.map(like => (
-                          <Avatar  name={like?.user?.musicName || like?.user?.username} src={like.user?.profileImage} />
-                        ))}
-                      </AvatarGroup>
-                    </HStack>
-                  </Link>
-                ) : null }
-              </HStack>
-            </DrawerHeader>
-            <DrawerBody overflowY={"auto"}>
-              <Stack spacing={2}>
-                { commentData.length ? commentData.map(comment => (
-                  <CommentCard setIsReplying={handleSetReply} key={_id} {...comment} />
-                )) : (
-                  <Center flex={1} pt={5}>
-                    <Text color={colors.TEXT_GRAY}>No comments</Text>
-                  </Center>
-                ) }
-              </Stack>
-            </DrawerBody>
-            <DrawerFooter pos={"relative"} w={"100%"}>
-              { isReplying && 
-              <Stack mx={6} bg={colors.BG_COLOR} right={0} py={2} pos={"absolute"} bottom={"85%"} left={0}>
-                <HStack alignItems={"center"} bg={hoverColor} p={3}>
-                  <Stack borderLeft={`3px solid ${colors.DIVIDER}`} pl={2} spacing={1} flex={1}>
-                    <Flex as={Link} to={`/profile/${isReplying?.user?.username}`} alignItems={'center'} gap={3}>
-                      <Heading color={colors.TEXT_WHITE} size={"xs"}>{isReplying?.user?.musicName || isReplying?.user?.username}</Heading>
-                      <Text color={colors.TEXT_GRAY} fontSize={'xs'}>{dayjs(isReplying?.date).fromNow()}</Text>
-                    </Flex>
-                    <Text color={colors.TEXT_DARK} fontSize={"sm"}>{isReplying?.comment}</Text>
-                  </Stack>
-                  <CloseButton pos={"static"} color={colors.TEXT_WHITE} onClick={() => setIsReplying(null)} />
-                </HStack>
-              </Stack>
-              }
-              <FormControl>
-                <Flex flexDirection={'row'} alignItems={'end'} gap={2}>
-                  <Textarea ref={textareaRef} color={colors.TEXT_WHITE} onChange={(e) => setComment(e.target.value)} size={'sm'} rows={1} variant={"outline"} placeholder={`Add comment for ${user?.username}`} value={comment}></Textarea>
-                  <CustomButton isLoading={isCommenting} onClick={isReplying ? handleReply : handleAddComment}>Send</CustomButton>
-                </Flex>
-              </FormControl>
-            </DrawerFooter>
-          </DrawerContent>
+          {showingLikes ? (
+            <LikesContent
+              isLoading={isGettingReactions}
+              handleGetReaction={handleGetReaction}
+              likesData={likesData}
+              reactionError={reactionError}
+              setShowingLikes={setShowingLikes}
+            />
+          ) : (
+            <CommentContent
+              comment={comment}
+              commentData={commentData}
+              handleAddComment={handleAddComment}
+              handleGetReaction={handleGetReaction}
+              handleReply={handleReply}
+              handleSetReply={handleSetReply}
+              isCommenting={isCommenting}
+              isGettingReactions={isGettingReactions}
+              isReplying={isReplying}
+              likesData={likesData}
+              reactionError={reactionError}
+              setComment={setComment}
+              setIsReplying={setIsReplying}
+              setShowingLikes={setShowingLikes}
+              textareaRef={textareaRef}
+              user={user}
+            />
+          )}
         </Drawer>
 
         <CardHeader p={3}>
@@ -354,7 +382,7 @@ const FeedCard: React.FC<FeedCardProps> = ({ contents, setContents, title, creat
                   variant='link'
                 />
                 <MenuList zIndex={MAX_DEPTH - 10} shadow={"lg"} bg={colors.BG_COLOR} border={colors.BG_COLOR}>
-                  {user?._id !== me?._id && (
+                  { !isMine ? (
                     <>
                       <ContentMenuItem
                         isLoading={isFollowing}
@@ -389,6 +417,22 @@ const FeedCard: React.FC<FeedCardProps> = ({ contents, setContents, title, creat
                       />
 
                     </>
+                  ) : (
+                    <>
+                      <ContentMenuItem
+                        isLoading={isDeleting}
+                        handleClick={handleDeleteContent}
+                        text="Delete Content"
+                        color={"red.500"}
+                        icon={<MdDelete color={theme.colors.red[500]} size={20} />}
+                      />
+
+                      {/* <ContentMenuItem
+                        handleClick={() => { }}
+                        text={`Mute ${user?.username}`}
+                        icon={<IoNotificationsOffOutline size={20} />}
+                      /> */}
+                    </>
                   )}
 
                   <ContentMenuItem
@@ -403,27 +447,32 @@ const FeedCard: React.FC<FeedCardProps> = ({ contents, setContents, title, creat
         </CardHeader>
 
         <CardBody px={3} pt={0} position={"relative"}>
-          { type === "music-video" ? (
+          {type === "music-video" ? (
             <video controls src={contentUrl} poster={coverImage}></video>
           ) : (
-              <Box position={"relative"}>
-                <Image
-                  rounded={"md"}
-                  w={"100%"}
-                  aspectRatio={16 / 12}
-                  objectFit={"cover"}
-                  src={coverImage || WELCOME_BG_IMAGE}
-                />
-                <Box zIndex={5} pos={"absolute"} bottom={0} left={0} w={"full"}>
-                  <audio controls preload='metadata' src={contentUrl} style={{ width: "100%" }}></audio>
-                </Box>
+            <Box position={"relative"}>
+              <Image
+                rounded={"md"}
+                w={"100%"}
+                aspectRatio={16 / 12}
+                objectFit={"cover"}
+                src={coverImage || WELCOME_BG_IMAGE}
+              />
+              <Box zIndex={5} pos={"absolute"} bottom={0} left={0} w={"full"}>
+                <audio onPlay={handlePlay} data-playing={0} controls preload='metadata' src={contentUrl} style={{ width: "100%" }}></audio>
               </Box>
-          ) }
+            </Box>
+          )}
         </CardBody>
 
         <CardFooter px={3} pt={0}>
           <Stack w={"full"} spacing={1}>
-            <Heading size={"sm"} color={colors.TEXT_WHITE}>{title}</Heading>
+            <HStack spacing={1}>
+              <Heading size={"sm"} color={colors.TEXT_WHITE}>{title}</Heading>
+              {(features.filter(_ => _) && features.filter(_ => _).length) ? (
+                <Text color={colors.TEXT_GRAY} fontSize={"sm"}>(feat) {features.filter(_ => _).join(", ")} </Text>
+              ) : null}
+            </HStack>
             <HStack>
               <Text fontSize={"xs"} fontWeight={"semibold"} color={colors.TEXT_GRAY}>{genre?.name}</Text>
               <Icon as={BsDot} color={"gray.500"} mx={0} />
@@ -432,9 +481,9 @@ const FeedCard: React.FC<FeedCardProps> = ({ contents, setContents, title, creat
             <HStack w={"full"} alignItems={"center"}>
               <HStack flex={1} alignItems={"center"} spacing={4}>
                 <ContentFooterItem
-                  handleClick={onOpen}
+                  handleClick={handleOpen}
                   icon={isCommentOpen ? BsChatFill : MdChat}
-                  text={formatNumber(commentData.length)}
+                  text={formatNumber(comments)}
                 />
 
                 <ContentFooterItem
@@ -442,7 +491,7 @@ const FeedCard: React.FC<FeedCardProps> = ({ contents, setContents, title, creat
                   iconProps={{ color: "red.600" }}
                   isLoading={isLiking}
                   icon={isLiked ? BsHeartFill : BsHeart}
-                  text={formatNumber(likes.length)}
+                  text={formatNumber(likes)}
                 />
 
                 <ContentFooterItem
@@ -450,13 +499,13 @@ const FeedCard: React.FC<FeedCardProps> = ({ contents, setContents, title, creat
                   iconProps={{ color: colors.TEXT_WHITE }}
                   icon={MdPlaylistAdd}
                   isLoading={isAdding}
-                  text={formatNumber(playListData.length)}
+                  text={formatNumber(playlists)}
                 />
               </HStack>
 
               <Spacer />
 
-              { price && !isPurchasedState ? (
+              {price && !isPurchasedState ? (
                 <HStack>
                   <Text fontSize={"sm"} color={TERTIARY_COLOR}>{+price.toFixed(2)}π</Text>
                   <CustomButton isLoading={isPaying} h={8} fontSize={"xs"} fontWeight={900} rounded={5} colorScheme='red' onClick={handlePurchase}>Buy</CustomButton>
@@ -482,8 +531,8 @@ interface ContentFooterItemProp extends StackProps {
 const ContentFooterItem: React.FC<ContentFooterItemProp> = ({ icon, isLoading, text, handleClick, iconProps, ...prop }) => {
   const { colors, isDark } = useColorMode()
 
-  if(isLoading) return (
-    <CircularProgress size={6} color="gray.400" isIndeterminate  />
+  if (isLoading) return (
+    <CircularProgress size={6} color="gray.400" isIndeterminate />
   )
   return (
     <HStack as={Button} variant={"ghost"} colorScheme={"gray"} spacing={1} alignItems={"center"} cursor={"pointer"} color={isDark ? colors.TEXT_WHITE : colors.TEXT_DARK} py={2} size={"xs" as any} onClick={handleClick} {...prop}>
