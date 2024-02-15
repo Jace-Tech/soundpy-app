@@ -49,24 +49,24 @@ const usePagination = (func: (page: number, __perPage: number, filter?: string) 
 
   const handleFetchMore = async () => {
     console.log({ isLastPage })
-    return
-    if(isLastPage) return
-     try {
-      setIsLoadingMore(true)
-      const result = await func(morePage + 1, perPage);
-      if(!result.success) return
-      console.log("RESULT DATA:", JSON.stringify(result, null, 4))
-      setMorePage(result?.data.page)
-      setIsLastPage(result?.data.isLastPage)
-      setData(prev => [...prev, ...result?.data.contents])
-      setTotalContents(result?.data.total || 0)
-    }
-    catch(error: any) {
-      console.log("ERROR: ", error.message)
-    }
-    finally {
-      setIsLoadingMore(false)
-    }
+
+    // if(isLastPage) return
+    //  try {
+    //   setIsLoadingMore(true)
+    //   const result = await func(morePage + 1, perPage);
+    //   if(!result.success) return
+    //   console.log("RESULT DATA:", JSON.stringify(result, null, 4))
+    //   setMorePage(result?.data.page)
+    //   setIsLastPage(result?.data.isLastPage)
+    //   setData(prev => [...prev, ...result?.data.contents])
+    //   setTotalContents(result?.data.total || 0)
+    // }
+    // catch(error: any) {
+    //   console.log("ERROR: ", error.message)
+    // }
+    // finally {
+    //   setIsLoadingMore(false)
+    // }
   }
 
   const handleFetchRequest = async (page: number, perPage: number) => {

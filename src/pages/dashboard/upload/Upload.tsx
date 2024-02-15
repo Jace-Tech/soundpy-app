@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react'
 import DashLayout from '../../../components/global/DashLayout'
 import AppBar from '../../../components/global/AppBar'
-import { Button, Checkbox, HStack, Heading, Link, Stack, Text, VStack, Highlight, Drawer, DrawerOverlay, DrawerContent, DrawerBody, useDisclosure, DrawerFooter } from '@chakra-ui/react'
+import { Checkbox, HStack, Heading, Link, Stack, Text, VStack, Highlight, Drawer, DrawerOverlay, DrawerContent, DrawerBody, useDisclosure, DrawerFooter } from '@chakra-ui/react'
 import useColorMode from '../../../hooks/useColorMode'
 import { useUploadContext } from '../../../context/UploadContext'
 import AppContainer from '../../../components/global/AppContainer'

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Image, Link, Icon as ReactIcon, Text, VStack } from '@chakra-ui/react';
+import { Image, Icon as ReactIcon, Text, VStack } from '@chakra-ui/react';
 import React from 'react'
 import { Link as ReactLink, useLocation } from "react-router-dom"
 import useColorMode from '../../hooks/useColorMode';
