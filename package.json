@@ -28,7 +28,7 @@
     "react-helmet": "^6.1.0",
     "react-hook-form": "^7.45.0",
     "react-icons": "^4.9.0",
-    "react-lottie": "^1.2.3",
+    "react-lottie": "^1.2.4",
     "react-mirt": "^1.3.0",
     "react-player": "^2.13.0",
     "react-range": "^1.8.14",
@@ -37,7 +37,7 @@
     "react-scripts": "^3.0.1",
     "react-scroll": "^1.8.9",
     "react-use-audio-player": "^2.0.0",
-    "typescript": "^4.0.2",
+    "typescript": "4.0.2",
     "web-vitals": "^2.1.0"
   },
   "devDependencies": {
