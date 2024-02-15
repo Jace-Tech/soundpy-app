@@ -18,12 +18,12 @@ interface IusePagination {
 
 const usePagination = (func: (page: number, __perPage: number, filter?: string) => Promise<any>, _perPage: number = 12): IusePagination => {
   const [page, setPage] = useState<number>(0)
-  const [morePage, setMorePage] = useState<number>(0)
+  const [, setMorePage] = useState<number>(0)
   const [totalContents, setTotalContents] = useState<number>(0)
   const [perPage, setPerPage] = useState<any>(_perPage)
   const [isLastPage, setIsLastPage] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(false)
-  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false)
+  const [isLoadingMore] = useState<boolean>(false)
   const [data, setData] = useState<any[]>([])
 
 
