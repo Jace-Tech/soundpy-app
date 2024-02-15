@@ -16,7 +16,7 @@ import { blockContent, followUser } from '../../../../apis/user';
 import { Link as ReactLink } from 'react-router-dom';
 import useAlert from '../../../../hooks/useAlert';
 // import { useGlobalContext } from '../../context';
-import * as dayjs from 'dayjs'
+import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime'
 dayjs.extend(relativeTime)
 

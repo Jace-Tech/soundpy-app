@@ -19,7 +19,7 @@ import { useNavigate, Link as ReactLink } from 'react-router-dom';
 import useAlert from '../../hooks/useAlert';
 import { formatNumber } from '../../utils/helper';
 import { addToPlaylist } from '../../apis/playlist';
-import * as dayjs from 'dayjs'
+import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime'
 import usePayment from '../../hooks/usePayment';
 import { contentPayment } from '../../apis/payment';

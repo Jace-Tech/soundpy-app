@@ -4,7 +4,7 @@ import useColorMode from '../../hooks/useColorMode'
 import CustomLoader from '../global/CustomLoader';
 import CustomButton from '../global/CustomButton';
 import { Link } from 'react-router-dom';
-import * as dayjs from 'dayjs'
+import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime'
 import EmptyState from '../global/EmptyState';
 import { MdOutlineKeyboardBackspace } from 'react-icons/md';

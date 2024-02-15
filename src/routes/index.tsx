@@ -1,4 +1,5 @@
 
+import React from 'react'
 import { ReactNode, lazy } from "react";
 
 import { Welcome } from "../pages";

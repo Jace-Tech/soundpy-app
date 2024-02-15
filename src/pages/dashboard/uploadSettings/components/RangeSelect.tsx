@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { Range, getTrackBackground } from 'react-range';
 import { PRIMARY_COLOR } from '../../../../utils/colors';
 

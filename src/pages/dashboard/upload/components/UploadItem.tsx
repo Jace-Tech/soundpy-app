@@ -2,6 +2,7 @@ import { HStack, Heading, Icon, Stack, StackProps, Text } from "@chakra-ui/react
 import useColorMode from "../../../../hooks/useColorMode";
 import { IoAddCircle } from "react-icons/io5";
 import { IconType } from "react-icons";
+import React from 'react'
 
 interface UploadItemProp extends StackProps {
   icon?: IconType;

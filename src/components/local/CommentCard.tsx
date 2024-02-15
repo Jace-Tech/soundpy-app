@@ -2,7 +2,7 @@
 import { Avatar, Button, Collapse, Flex, HStack, Heading, Stack, Text, useDisclosure } from '@chakra-ui/react'
 import React from 'react'
 import useColorMode from '../../hooks/useColorMode'
-import * as dayjs from 'dayjs'
+import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { Link } from 'react-router-dom'
 import CustomButton from '../global/CustomButton'

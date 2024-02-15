@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import ReactPlayer from 'react-player'; // You can use your chosen media player library
 // Make sure to install and import the library properly
 

@@ -23,7 +23,7 @@ const Likes: React.FC<LikesProps> = () => {
   const [likesData, setLikesData] = useState<LikeDataType[]>([])
   const { id } = useParams()
   const { isOpen: isLoading, onClose: closeLoading, onOpen: openLoading } = useDisclosure()
-  const token = useAppSelector(state => state.userStore.token)
+  const token = useAppSelector(state => state.userStore.token!)
   const { showAlert } = useAlert()
   const { hoverColor, colors } = useColorMode()
 

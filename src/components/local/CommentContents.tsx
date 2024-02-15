@@ -6,7 +6,7 @@ import CustomLoader from '../global/CustomLoader';
 import CustomButton from '../global/CustomButton';
 import CommentCard from './CommentCard';
 import { Link } from 'react-router-dom';
-import * as dayjs from 'dayjs'
+import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime'
 dayjs.extend(relativeTime)
 

@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react'
 import DashLayout from '../../../components/global/DashLayout'
-import { Avatar, Badge, Box, Button, Container, HStack, Heading, IconButton, Spacer, Stack, Text, Link, Image, useDisclosure } from '@chakra-ui/react'
+import { Avatar, Badge, Box, Button, Container, HStack, Heading, IconButton, Spacer, Stack, Text, Image, useDisclosure } from '@chakra-ui/react'
 import useColorMode from '../../../hooks/useColorMode'
 import { useNavigate, useParams } from 'react-router-dom'
 import { BiArrowBack, BiSearch } from 'react-icons/bi'
