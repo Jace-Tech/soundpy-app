@@ -25,6 +25,7 @@ const FooterItem:React.FC<FooterItemProps> = ({ link, title, main, ActiveIcon, I
     to: isActive ? undefined : link,
     cursor: "pointer",
     onClick: (event: any) => {
+      if(!isActive) return
       event.preventDefault()
       handleRefresh?.()
     }

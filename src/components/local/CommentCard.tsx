@@ -1,5 +1,5 @@
 
-import { Avatar, Button, Collapse, Flex, HStack, Heading, Spacer, Stack, Text, useDisclosure } from '@chakra-ui/react'
+import { Avatar, Button, Collapse, Flex, HStack, Heading, Stack, Text, useDisclosure } from '@chakra-ui/react'
 import React from 'react'
 import useColorMode from '../../hooks/useColorMode'
 import dayjs from 'dayjs';
@@ -68,7 +68,6 @@ const UserCommentComponent: React.FC<UserCommentComponentProp> = ({ user, commen
             </HStack>
             <Text color={colors.TEXT_DARK} fontSize={"sm"}>{comment}</Text>
             <HStack justifyContent={"flex-end"}>
-
                 {setIsReplying && <CustomButton onClick={() => setIsReplying(prop)} size={"sm"} bg={"transparent"} _hover={{ color: colors.PRIMARY_COLOR }} color={colors.PRIMARY_COLOR} variant={"link"}>Reply</CustomButton>}
             </HStack>
         </Stack>

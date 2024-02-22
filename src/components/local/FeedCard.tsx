@@ -415,10 +415,8 @@ const FeedCard: React.FC<FeedCardProps> = ({ contents, dataId, isLiked, title, c
                         text={"Hide this content"}
                         icon={<IoEyeOffOutline size={20} />}
                       />
-
                     </>
                   ) : (
-                    <>
                       <ContentMenuItem
                         isLoading={isDeleting}
                         handleClick={handleDeleteContent}
@@ -426,13 +424,6 @@ const FeedCard: React.FC<FeedCardProps> = ({ contents, dataId, isLiked, title, c
                         color={"red.500"}
                         icon={<MdDelete color={theme.colors.red[500]} size={20} />}
                       />
-
-                      {/* <ContentMenuItem
-                        handleClick={() => { }}
-                        text={`Mute ${user?.username}`}
-                        icon={<IoNotificationsOffOutline size={20} />}
-                      /> */}
-                    </>
                   )}
 
                   <ContentMenuItem

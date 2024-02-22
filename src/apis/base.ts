@@ -1,5 +1,3 @@
-// export const BASE_URL = "https://play-server.onrender.com/api/v1"
-
 // DEV SERVER
 // export const BASE_URL = "http://localhost:5100/api/v1"
 
