@@ -13,10 +13,9 @@ interface DashLayoutProps extends BoxProps {
   footer?: React.ReactElement;
   hideFooter?: boolean;
   capHeight?: number;
-  handleRefresh?: () => void;
 } 
 
-const DashLayout:React.FC<DashLayoutProps> = ({header, handleRefresh, footer, children, hideFooter, capHeight, ...prop }) => {
+const DashLayout:React.FC<DashLayoutProps> = ({header, footer, children, hideFooter, capHeight, ...prop }) => {
   const { isDark } = useColorMode()
   const { mainHeight } = useGlobalContext()
   const user = useAppSelector(state => state.userStore.user)
@@ -41,7 +40,7 @@ const DashLayout:React.FC<DashLayoutProps> = ({header, handleRefresh, footer, ch
       >
         { children }
       </Box>
-     { footer ? footer : !hideFooter && <Footer handleRefresh={handleRefresh} />}
+     { footer ? footer : !hideFooter && <Footer />}
     </Flex>
   )
 }

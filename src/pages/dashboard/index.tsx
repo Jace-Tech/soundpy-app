@@ -4,7 +4,8 @@ import AppContainer from '../../components/global/AppContainer';
 import Header from '../../components/global/Header';
 import SectionBox from '../../components/global/SectionBox';
 import useColorMode from '../../hooks/useColorMode';
-import { Box, Button, CircularProgress, HStack, Stack, Text } from '@chakra-ui/react';
+import { Alert, AlertIcon, Box, Button, CircularProgress, HStack, Stack, Text, Link } from '@chakra-ui/react';
+import { Link as ReactLink } from "react-router-dom"
 import FeedCard from '../../components/local/FeedCard';
 import { getPostContent } from '../../apis/content'
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
@@ -17,17 +18,15 @@ import Footer from '../../components/global/Footer';
 import "../../styles/dash.css"
 import useInfiniteScroll from '../../hooks/useInfiniteScroll';
 
-// import { isElementInView } from '../../utils/helper';
-// import { log } from 'console';
-
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface DashboardProps { }
 
 const Dashboard: React.FC<DashboardProps> = () => {
   const { colors } = useColorMode()
   const token = useAppSelector(state => state.userStore.token)
+  const user = useAppSelector(state => state.userStore.user)
   const [type, setType] = useState<ContentType>("")
-  const { data, handleFetchRequest, page, perPage, isLoadingMore: isFetching, isLoading, handleFilterRequest, handleFetchMore } = usePagination((page, perPage, filter) => getPostContent(token!.token, page, perPage, filter), 2)
+  const { data, handleFetchRequest, page, perPage, isLoadingMore: isFetching, isLoading, handleFilterRequest, handleFetchMore } = usePagination((page, perPage, filter) => getPostContent(token!.token, page, perPage, filter), 12)
   const contents = useAppSelector(state => state.dataStore.contents)
   const dispatch = useAppDispatch()
   const headerRef = useRef<HTMLDivElement>(null)
@@ -51,9 +50,9 @@ const Dashboard: React.FC<DashboardProps> = () => {
     return handleFilterRequest(`type=${type}`)
   }
 
-  const handleRefresh = () => {
-    handleFetchRequest(page, perPage)
-  }
+  // const handleRefresh = () => {
+  //   handleFetchRequest(page, perPage)
+  // }
 
   useEffect(() => {
     handleGetType()
@@ -83,8 +82,15 @@ const Dashboard: React.FC<DashboardProps> = () => {
   return (
     <Box minH={"100vh"}>
       <Header borderBottom={`1px solid ${colors.DIVIDER}`} />
+      <Box ref={headerRef} >
+      {!user?.musicName && (
+          <Alert fontSize={"sm"} status='info' variant='subtle'>
+          <AlertIcon />
+            Please complete your profile. <Link to={"/profile/settings"} ml={1} color={"blue.500"} as={ReactLink}>click here</Link>
+        </Alert>
+        )}
+      
       <Box ref={headerRef} mb={4} px={4} borderBottom={`1px solid ${colors.DIVIDER}`} bg={colors.BG_COLOR} pos={isFixed ? "fixed" : undefined}  left={0} w={"100%"} top={0} zIndex={MAX_DEPTH - 20}>
-
         <HStack px={4} py={2} alignItems={"center"}>
           <Button onClick={() => setType("")} bg={"transparent"} aria-selected={type === ""} _selected={{ color: "#fff", bg: colors.PRIMARY_COLOR }} px={5} py={1.5} rounded="full" color={colors.TEXT_DARK} fontWeight={"semibold"}>All</Button>
 
@@ -95,6 +101,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
           <Button bg={"transparent"} onClick={() => setType("beat")} aria-selected={type === "beat"} _selected={{ color: "#fff", bg: colors.PRIMARY_COLOR }} px={5} py={1.5} rounded="full" color={colors.TEXT_DARK} fontWeight={"semibold"}>Beat</Button>
           {/* <Tab _selected={{ color: "#fff", bg: colors.PRIMARY_COLOR }} px={5} py={1.5} rounded="full" color={colors.TEXT_GRAY} fontWeight={"semibold"}>Live</Tab> */}
         </HStack>
+      </Box>
       </Box>
       <SectionBox HeaderProp={{ px: 4 }} pt={0} bg={colors.BG_COLOR} h={"fit-content"} mb={16}>
         <AppContainer>
@@ -119,7 +126,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
         </AppContainer>
       </SectionBox>
       <Box pos={"fixed"} zIndex={MAX_DEPTH} bottom={0} left={0} w={"100%"}>
-        <Footer handleRefresh={handleRefresh} />
+        <Footer />
       </Box>
     </Box>
   )

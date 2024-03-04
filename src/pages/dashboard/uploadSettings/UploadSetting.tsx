@@ -19,17 +19,16 @@ import PriceComponent from './components/PriceComponent'
 import { DEAFULT_HEADER_HEIGHT } from '../../../utils/constant'
 import ChatAudioPlayer from '../chat/components/ChatAudioPlayer'
 import useSimplePlayer from '../../../hooks/useSimplePlayer'
-// import { getFileUrl } from '../../../utils/helper'
 import { uploadPostContent } from '../../../apis/upload'
 import { useGlobalContext } from '../../../context'
 import { useAppSelector } from '../../../store/hooks'
 import StakePriceModal from '../../../components/modals/StakePriceModal'
 import useAlert from '../../../hooks/useAlert'
-// import { APP_HIDE_ACCEPT_MODAL, Storage } from '../../../utils/storage'
 import usePayment from '../../../hooks/usePayment'
 import { getAppSettings } from '../../../apis/content'
 import { stakePayment } from '../../../apis/payment'
 import { getGenres } from '../../../apis/genre'
+import CustomLoader from '../../../components/global/CustomLoader'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface UploadSettingProps { }
@@ -40,7 +39,7 @@ const UploadSetting: React.FC<UploadSettingProps> = () => {
   const { handleCancelUpload, contentType, contentFile } = useUploadContext()
   const { control, getValues, reset, formState: { isValid } } = useForm({ mode: "onTouched" })
   const navigate = useNavigate()
-  const { handleOpenFilePicker, file, processedData, setFile } = useFilePicker([".jpg", ".png"], "dataUrl")
+  const { handleOpenFilePicker, file, processedData, isLoading, setFile } = useFilePicker([".jpg", ".png"], "dataUrl")
   const { load, duration } = useSimplePlayer()
   const { openLoading, closeLoading } = useGlobalContext()
   const [shouldShow, setShouldShow] = useState(true)
@@ -51,6 +50,16 @@ const UploadSetting: React.FC<UploadSettingProps> = () => {
   const [settings, setSettings] = useState<AppSettingsData>()
   const [genres, setGenres] = useState<GenreType[]>([])
   const { onOpen: openFetching, onClose: closeFetching } = useDisclosure()
+  const [videoUrl, setVideoUrl] = useState<string>()
+
+  const handleGetVideo = async () => {
+    if(contentType !== "music-video") return
+    const blob = new Blob([(contentFile as File)], { type: contentFile?.type })
+    const url = URL.createObjectURL(blob)
+
+    console.log("URL:", url)
+    setVideoUrl(url)
+  }
 
 
   const getSettings = async () => {
@@ -190,6 +199,10 @@ const UploadSetting: React.FC<UploadSettingProps> = () => {
   }
 
   useEffect(() => {
+    handleGetVideo()
+  }, [])
+
+  useEffect(() => {
     fetchGenres()
   }, [])
 
@@ -217,11 +230,17 @@ const UploadSetting: React.FC<UploadSettingProps> = () => {
     >
       <AppContainer py={8}>
         <Stack spacing={4}>
-
           {shouldShow && <FileLoader file={contentFile!} />}
           <Box pb={4} mt={3} borderBottom={`1px solid ${colors.DIVIDER}`} >
             <Text color={colors.TEXT_WHITE} fontWeight={"bold"} fontSize={"sm"} mb={4}>Preview</Text>
-            <ChatAudioPlayer file={new Blob([(contentFile as File)], { type: contentFile?.type })} handleUpdate={handlePlayTime} />
+            {contentType === "music-video" ? videoUrl ? (
+              <video controls src={videoUrl} height={200} style={{ width: "100%" }}></video>
+            ) : (
+              <CustomLoader alignItems={"center"} justifyContent={"center"} text='Processing data' />
+            )
+              : (
+                <ChatAudioPlayer file={new Blob([(contentFile as File)], { type: contentFile?.type })} handleUpdate={handlePlayTime} />
+              )}
           </Box>
           <FormControl borderBottom={`1px solid ${colors.DIVIDER}`} pb={4}>
             <FormLabel color={colors.TEXT_WHITE} fontWeight={"bold"} fontSize={"sm"}>Upload artwork</FormLabel>
