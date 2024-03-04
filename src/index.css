@@ -16,9 +16,13 @@
   -webkit-text-size-adjust: 100%;
 }
 
+
 body {
-  overflow: hidden;
+  min-height: 100vh;
+  scrollbar-width: 4px;
+  scrollbar-color: transparent #555;
 }
+
 
 .scrollbar {
   scrollbar-width: 4px;
@@ -42,6 +46,16 @@ body {
 }
 
 .scrollbar.dark::-webkit-scrollbar-thumb {
+  background-color: #555;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
   background-color: #555;
   border-radius: 10px;
 }

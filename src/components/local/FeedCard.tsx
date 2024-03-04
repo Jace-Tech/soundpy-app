@@ -175,7 +175,7 @@ const FeedCard: React.FC<FeedCardProps> = ({ contents, dataId, isLiked, title, c
 
       const prevData = [...commentData]
       const index = prevData.findIndex(comment => comment._id === isReplying._id)
-      if(index === -1) return
+      if (index === -1) return
 
       prevData[index] = {
         ...prevData[index],
@@ -230,10 +230,10 @@ const FeedCard: React.FC<FeedCardProps> = ({ contents, dataId, isLiked, title, c
     try {
       openDeleting()
       const result = await deleteContent(_id, token.token!)
-      if(!result.success) throw new Error(result.message)
+      if (!result.success) throw new Error(result.message)
       showAlert(result.message, "success")
 
-    } 
+    }
     catch (error: any) {
       showAlert(error.message, "error")
     }
@@ -306,9 +306,9 @@ const FeedCard: React.FC<FeedCardProps> = ({ contents, dataId, isLiked, title, c
   const handlePlay = (event: any) => {
     const currentAudio = event.target
 
-    const items =[...document.querySelectorAll("[data-playing]")]
+    const items = [...document.querySelectorAll("[data-playing]")]
     const prevPlaying = items.find(item => (item as any)?.dataset.playing === "1") as any
-    if(prevPlaying && !prevPlaying.paused) {
+    if (prevPlaying && !prevPlaying.paused) {
       prevPlaying.pause()
       prevPlaying.currentTime = 0
       prevPlaying.setAttribute("data-playing", "0")
@@ -320,195 +320,193 @@ const FeedCard: React.FC<FeedCardProps> = ({ contents, dataId, isLiked, title, c
 
 
   return (
-    <>
-      <Card w={"100%"}
-        {...cardTheme[cardStyle]}
-        as={"section"}
-        id={_id}
-        mb={2}
-        data-id={dataId}
-      >
-        <Drawer placement={'bottom'} onClose={onClose} isOpen={isOpen}>
-          <DrawerOverlay />
-          {showingLikes ? (
-            <LikesContent
-              isLoading={isGettingReactions}
-              handleGetReaction={handleGetReaction}
-              likesData={likesData}
-              reactionError={reactionError}
-              setShowingLikes={setShowingLikes}
-            />
-          ) : (
-            <CommentContent
-              comment={comment}
-              commentData={commentData}
-              handleAddComment={handleAddComment}
-              handleGetReaction={handleGetReaction}
-              handleReply={handleReply}
-              handleSetReply={handleSetReply}
-              isCommenting={isCommenting}
-              isGettingReactions={isGettingReactions}
-              isReplying={isReplying}
-              likesData={likesData}
-              reactionError={reactionError}
-              setComment={setComment}
-              setIsReplying={setIsReplying}
-              setShowingLikes={setShowingLikes}
-              textareaRef={textareaRef}
-              user={user}
-            />
-          )}
-        </Drawer>
+    <Card w={"100%"}
+      {...cardTheme[cardStyle]}
+      as={"section"}
+      id={`item-${_id}`}
+      mb={2}
+      data-id={dataId}
+    >
+      <Drawer placement={'bottom'} onClose={onClose} isOpen={isOpen}>
+        <DrawerOverlay />
+        {showingLikes ? (
+          <LikesContent
+            isLoading={isGettingReactions}
+            handleGetReaction={handleGetReaction}
+            likesData={likesData}
+            reactionError={reactionError}
+            setShowingLikes={setShowingLikes}
+          />
+        ) : (
+          <CommentContent
+            comment={comment}
+            commentData={commentData}
+            handleAddComment={handleAddComment}
+            handleGetReaction={handleGetReaction}
+            handleReply={handleReply}
+            handleSetReply={handleSetReply}
+            isCommenting={isCommenting}
+            isGettingReactions={isGettingReactions}
+            isReplying={isReplying}
+            likesData={likesData}
+            reactionError={reactionError}
+            setComment={setComment}
+            setIsReplying={setIsReplying}
+            setShowingLikes={setShowingLikes}
+            textareaRef={textareaRef}
+            user={user}
+          />
+        )}
+      </Drawer>
 
-        <CardHeader p={3}>
-          <HStack alignItems={"center"}>
-            <HStack as={ReactLink} to={"/profile/" + user?.username} spacing={2}>
-              <Avatar border={`1px solid ${colors.DIVIDER}`} src={user?.profileImage} name={user?.musicName || user?.username} />
-              <Stack spacing={0}>
-                <Heading color={colors.TEXT_WHITE} size={"sm"}>{user?.musicName}</Heading>
-                <Text color={colors.TEXT_DARK} fontSize={"xs"}>@{user?.username}</Text>
-              </Stack>
+      <CardHeader p={3}>
+        <HStack alignItems={"center"}>
+          <HStack as={ReactLink} to={"/profile/" + user?.username} spacing={2}>
+            <Avatar border={`1px solid ${colors.DIVIDER}`} src={user?.profileImage} name={user?.musicName || user?.username} />
+            <Stack spacing={0}>
+              <Heading color={colors.TEXT_WHITE} size={"sm"}>{user?.musicName}</Heading>
+              <Text color={colors.TEXT_DARK} fontSize={"xs"}>@{user?.username}</Text>
+            </Stack>
+          </HStack>
+
+          <Spacer />
+
+          <HStack spacing={4}>
+            <Menu>
+              <MenuButton
+                as={IconButton}
+                color={colors.TEXT_WHITE}
+                aria-label='Options'
+                icon={<IoEllipsisVertical />}
+                variant='link'
+              />
+              <MenuList zIndex={MAX_DEPTH - 10} shadow={"lg"} bg={colors.BG_COLOR} border={colors.BG_COLOR}>
+                {!isMine ? (
+                  <>
+                    <ContentMenuItem
+                      isLoading={isFollowing}
+                      handleClick={handleFollowUser}
+                      text={`Follow ${user?.username}`}
+                      icon={<IoPersonAdd size={20} />}
+                    />
+
+                    <ContentMenuItem
+                      handleClick={() => { }}
+                      text={`Mute ${user?.username}`}
+                      icon={<IoNotificationsOffOutline size={20} />}
+                    />
+
+                    <ContentMenuItem
+                      handleClick={() => { }}
+                      text={`Report ${user?.username}`}
+                      icon={<IoFlagSharp size={20} />}
+                    />
+
+                    <ContentMenuItem
+                      isLoading={isBlocking}
+                      handleClick={handleBlockContent}
+                      text={`Block ${user?.username}`}
+                      icon={<MdBlock size={20} />}
+                    />
+
+                    <ContentMenuItem
+                      handleClick={() => { }}
+                      text={"Hide this content"}
+                      icon={<IoEyeOffOutline size={20} />}
+                    />
+                  </>
+                ) : (
+                  <ContentMenuItem
+                    isLoading={isDeleting}
+                    handleClick={handleDeleteContent}
+                    text="Delete Content"
+                    color={"red.500"}
+                    icon={<MdDelete color={theme.colors.red[500]} size={20} />}
+                  />
+                )}
+
+                <ContentMenuItem
+                  handleClick={handleShareContent}
+                  text={"Share"}
+                  icon={<IoIosShareAlt size={20} />}
+                />
+              </MenuList>
+            </Menu>
+          </HStack>
+        </HStack>
+      </CardHeader>
+
+      <CardBody px={3} pt={0} position={"relative"}>
+        {type === "music-video" ? (
+          <video controls src={contentUrl} poster={coverImage}></video>
+        ) : (
+          <Box position={"relative"}>
+            <Image
+              rounded={"md"}
+              w={"100%"}
+              aspectRatio={16 / 12}
+              objectFit={"cover"}
+              src={coverImage || WELCOME_BG_IMAGE}
+            />
+            <Box zIndex={5} pos={"absolute"} bottom={0} left={0} w={"full"}>
+              <audio onPlay={handlePlay} data-playing={0} controls preload='metadata' src={contentUrl} style={{ width: "100%" }}></audio>
+            </Box>
+          </Box>
+        )}
+      </CardBody>
+
+      <CardFooter px={3} pt={0}>
+        <Stack w={"full"} spacing={1}>
+          <HStack spacing={1}>
+            <Heading size={"sm"} color={colors.TEXT_WHITE}>{title}</Heading>
+            {(features.filter(_ => _) && features.filter(_ => _).length) ? (
+              <Text color={colors.TEXT_GRAY} fontSize={"sm"}>(feat) {features.filter(_ => _).join(", ")} </Text>
+            ) : null}
+          </HStack>
+          <HStack>
+            <Text fontSize={"xs"} fontWeight={"semibold"} color={colors.TEXT_GRAY}>{genre?.name}</Text>
+            <Icon as={BsDot} color={"gray.500"} mx={0} />
+            <Text fontSize={"xs"} noOfLines={1} fontWeight={"medium"} color={colors.TEXT_DARK}>{dayjs(createdAt).fromNow()}</Text>
+          </HStack>
+          <HStack w={"full"} alignItems={"center"}>
+            <HStack flex={1} alignItems={"center"} spacing={4}>
+              <ContentFooterItem
+                handleClick={handleOpen}
+                icon={isCommentOpen ? BsChatFill : MdChat}
+                text={formatNumber(comments)}
+              />
+
+              <ContentFooterItem
+                handleClick={handleLike}
+                iconProps={{ color: "red.600" }}
+                isLoading={isLiking}
+                icon={isLiked ? BsHeartFill : BsHeart}
+                text={formatNumber(likes)}
+              />
+
+              <ContentFooterItem
+                handleClick={handleAddToPlaylist}
+                iconProps={{ color: colors.TEXT_WHITE }}
+                icon={MdPlaylistAdd}
+                isLoading={isAdding}
+                text={formatNumber(playlists)}
+              />
             </HStack>
 
             <Spacer />
 
-            <HStack spacing={4}>
-              <Menu>
-                <MenuButton
-                  as={IconButton}
-                  color={colors.TEXT_WHITE}
-                  aria-label='Options'
-                  icon={<IoEllipsisVertical />}
-                  variant='link'
-                />
-                <MenuList zIndex={MAX_DEPTH - 10} shadow={"lg"} bg={colors.BG_COLOR} border={colors.BG_COLOR}>
-                  { !isMine ? (
-                    <>
-                      <ContentMenuItem
-                        isLoading={isFollowing}
-                        handleClick={handleFollowUser}
-                        text={`Follow ${user?.username}`}
-                        icon={<IoPersonAdd size={20} />}
-                      />
-
-                      <ContentMenuItem
-                        handleClick={() => { }}
-                        text={`Mute ${user?.username}`}
-                        icon={<IoNotificationsOffOutline size={20} />}
-                      />
-
-                      <ContentMenuItem
-                        handleClick={() => { }}
-                        text={`Report ${user?.username}`}
-                        icon={<IoFlagSharp size={20} />}
-                      />
-
-                      <ContentMenuItem
-                        isLoading={isBlocking}
-                        handleClick={handleBlockContent}
-                        text={`Block ${user?.username}`}
-                        icon={<MdBlock size={20} />}
-                      />
-
-                      <ContentMenuItem
-                        handleClick={() => { }}
-                        text={"Hide this content"}
-                        icon={<IoEyeOffOutline size={20} />}
-                      />
-                    </>
-                  ) : (
-                      <ContentMenuItem
-                        isLoading={isDeleting}
-                        handleClick={handleDeleteContent}
-                        text="Delete Content"
-                        color={"red.500"}
-                        icon={<MdDelete color={theme.colors.red[500]} size={20} />}
-                      />
-                  )}
-
-                  <ContentMenuItem
-                    handleClick={handleShareContent}
-                    text={"Share"}
-                    icon={<IoIosShareAlt size={20} />}
-                  />
-                </MenuList>
-              </Menu>
-            </HStack>
-          </HStack>
-        </CardHeader>
-
-        <CardBody px={3} pt={0} position={"relative"}>
-          {type === "music-video" ? (
-            <video controls src={contentUrl} poster={coverImage}></video>
-          ) : (
-            <Box position={"relative"}>
-              <Image
-                rounded={"md"}
-                w={"100%"}
-                aspectRatio={16 / 12}
-                objectFit={"cover"}
-                src={coverImage || WELCOME_BG_IMAGE}
-              />
-              <Box zIndex={5} pos={"absolute"} bottom={0} left={0} w={"full"}>
-                <audio onPlay={handlePlay} data-playing={0} controls preload='metadata' src={contentUrl} style={{ width: "100%" }}></audio>
-              </Box>
-            </Box>
-          )}
-        </CardBody>
-
-        <CardFooter px={3} pt={0}>
-          <Stack w={"full"} spacing={1}>
-            <HStack spacing={1}>
-              <Heading size={"sm"} color={colors.TEXT_WHITE}>{title}</Heading>
-              {(features.filter(_ => _) && features.filter(_ => _).length) ? (
-                <Text color={colors.TEXT_GRAY} fontSize={"sm"}>(feat) {features.filter(_ => _).join(", ")} </Text>
-              ) : null}
-            </HStack>
-            <HStack>
-              <Text fontSize={"xs"} fontWeight={"semibold"} color={colors.TEXT_GRAY}>{genre?.name}</Text>
-              <Icon as={BsDot} color={"gray.500"} mx={0} />
-              <Text fontSize={"xs"} noOfLines={1} fontWeight={"medium"} color={colors.TEXT_DARK}>{dayjs(createdAt).fromNow()}</Text>
-            </HStack>
-            <HStack w={"full"} alignItems={"center"}>
-              <HStack flex={1} alignItems={"center"} spacing={4}>
-                <ContentFooterItem
-                  handleClick={handleOpen}
-                  icon={isCommentOpen ? BsChatFill : MdChat}
-                  text={formatNumber(comments)}
-                />
-
-                <ContentFooterItem
-                  handleClick={handleLike}
-                  iconProps={{ color: "red.600" }}
-                  isLoading={isLiking}
-                  icon={isLiked ? BsHeartFill : BsHeart}
-                  text={formatNumber(likes)}
-                />
-
-                <ContentFooterItem
-                  handleClick={handleAddToPlaylist}
-                  iconProps={{ color: colors.TEXT_WHITE }}
-                  icon={MdPlaylistAdd}
-                  isLoading={isAdding}
-                  text={formatNumber(playlists)}
-                />
+            {price && !isPurchasedState ? (
+              <HStack>
+                <Text fontSize={"sm"} color={TERTIARY_COLOR}>{+price.toFixed(2)}π</Text>
+                <CustomButton isLoading={isPaying} h={8} fontSize={"xs"} fontWeight={900} rounded={5} colorScheme='red' onClick={handlePurchase}>Buy</CustomButton>
               </HStack>
-
-              <Spacer />
-
-              {price && !isPurchasedState ? (
-                <HStack>
-                  <Text fontSize={"sm"} color={TERTIARY_COLOR}>{+price.toFixed(2)}π</Text>
-                  <CustomButton isLoading={isPaying} h={8} fontSize={"xs"} fontWeight={900} rounded={5} colorScheme='red' onClick={handlePurchase}>Buy</CustomButton>
-                </HStack>
-              ) : (
-                <CustomButton onClick={handleDownload} h={8} fontSize={"xs"} fontWeight={900} rounded={5}>Download</CustomButton>
-              )}
-            </HStack>
-          </Stack>
-        </CardFooter>
-      </Card>
-    </>
+            ) : (
+              <CustomButton onClick={handleDownload} h={8} fontSize={"xs"} fontWeight={900} rounded={5}>Download</CustomButton>
+            )}
+          </HStack>
+        </Stack>
+      </CardFooter>
+    </Card>
   )
 }
 

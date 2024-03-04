@@ -5,6 +5,7 @@ import Footer from './Footer'
 import useColorMode from '../../hooks/useColorMode';
 import { useGlobalContext } from '../../context';
 import { useAppSelector } from '../../store/hooks';
+import "../../styles/dash.css"
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface DashLayoutProps extends BoxProps {
