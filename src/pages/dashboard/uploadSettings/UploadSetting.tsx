@@ -39,7 +39,7 @@ const UploadSetting: React.FC<UploadSettingProps> = () => {
   const { handleCancelUpload, contentType, contentFile } = useUploadContext()
   const { control, getValues, reset, formState: { isValid } } = useForm({ mode: "onTouched" })
   const navigate = useNavigate()
-  const { handleOpenFilePicker, file, processedData, isLoading, setFile } = useFilePicker([".jpg", ".png"], "dataUrl")
+  const { handleOpenFilePicker, file, processedData, setFile } = useFilePicker([".jpg", ".png"], "dataUrl")
   const { load, duration } = useSimplePlayer()
   const { openLoading, closeLoading } = useGlobalContext()
   const [shouldShow, setShouldShow] = useState(true)
